@@ -1,0 +1,49 @@
+# Site settings
+title: 牛排档
+email: cookedsteak708@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  牛排档
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: cookedsteak.github.io # the base hostname & protocol for your site
+rss_url: /pages/feed.xml
+author: cookedsteak
+
+# Sidebar filter
+# Choose 'tag' or 'category' as filter in sidebar.
+filter: 'category'
+recent_num: 20
+
+# Social account
+twitter: cookedsteak
+github: cookedsteak
+instagram: cookedsteak
+linkedin: 睿立-郭-94197bbb
+
+# avatar and Favicon
+avatar: https://en.gravatar.com/userimage/34851015/af88a21c0507466aaa6ce3c14f57fa2c.png
+favicon: https://en.gravatar.com/userimage/34851015/af88a21c0507466aaa6ce3c14f57fa2c.png
+
+# disqus config
+disqus:
+  shortname: suyan-zh
+
+# google analytics config
+ga:
+  id: UA-117936421-1
+  url: cookedsteak.github.io
+
+# Build settings
+permalink: /:year/:month/:day/:title.html
+markdown: kramdown
+highlighter: rouge
+mathjax: disabled
+sass:
+  style: compressed
+
+# Jekyll Plugin
+# https://help.github.com/articles/adding-jekyll-plugins-to-a-github-pages-site/
+gems:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-feed
+
