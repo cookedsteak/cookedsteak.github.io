@@ -87,13 +87,15 @@
   text-align: center
   color: $tag-color
   border-bottom: 1px solid $tag-border-color
-  transition: color .15s linear, box-shadow .3s $time-function
+  transition: color .15s linear, box-shadow .15s linear
+  -webkit-transition: color .15s linear, box-shadow .15s linear
   cursor: pointer
   &:hover
     color: $tag-hover-color
     box-shadow: inset 6px 0 0 $toc-bg
   &.active
-    color: $tag-active-color
+    //color: $tag-active-color
+    color: #2EB695
     box-shadow: inset $sidebar-left-width 0 0 $toc-bg
 
 
