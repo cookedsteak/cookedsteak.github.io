@@ -3,7 +3,7 @@ layout: post
 title: 那该死的索引
 category: 技术
 keywords: mysql,索引,数据库
-comments: true
+comments: false
 ---
 
 ### 一个头疼的问题

@@ -3,7 +3,7 @@ layout: post
 title: 牛排的废话猜想
 category: 技术
 keywords: 数据,个人数据,数据价值,用户画像
-comments: true
+comments: false
 ---
 
 牛排的废话猜想：

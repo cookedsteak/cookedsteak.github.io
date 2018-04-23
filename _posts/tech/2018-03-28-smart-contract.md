@@ -3,7 +3,7 @@ layout: post
 title: 以太坊智能合约入门
 category: 技术
 keywords: 以太坊,智能合约,技术,区块链
-comments: true
+comments: false
 ---
 
 ## 一、开头
