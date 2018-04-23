@@ -28,7 +28,7 @@ $(function() {
       $(this).attr('id', function() {
         var ID = "", alphabet = "abcdefghijklmnopqrstuvwxyz";
 
-        for(var i=0; i < 5; i++) {
+        for(var i=0; i  < 5; i++) {
           ID += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
         }
         return ID;
