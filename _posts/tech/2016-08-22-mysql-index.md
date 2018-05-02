@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 那该死的索引
+title: 该死的索引
 category: 技术
 keywords: mysql,索引,数据库
 comments: false
@@ -100,5 +100,4 @@ MariaDB [fun]> SELECT COUNT(DISTINCT last_name) AS cardinality FROM users;
 参考链接：
 - https://stackoverflow.com/questions/2566211/what-is-cardinality-in-mysql
 - https://medium.com/prismapp/indexing-mysql-with-examples-f426332ea3ec
-- 
-
+- http://www.ywnds.com/?p=8378#comments
