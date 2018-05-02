@@ -63,4 +63,42 @@ MariaDB [fun]> EXPLAIN SELECT * FROM users WHERE last_name = 'Harahap';
 +------+-------------+-------+------+---------------+------------+---------+-------+------+-----------------------+
 ```
 
-发觉好像有变化了，
+发觉好像有变化了，我们发现搜索范围从全表缩小到了两行，emm...这似乎说明了我们刚刚设置的索引有了效果。
+为毛呢，索引是什么原理呢？可以看下[该死的索引·二](/)。
+
+接下去的问题：我们如何才能知道我们的索引对于查询是有效果的呢？首先我们需要明白Mysql中的一个概念：
+
+- Cardinality值
+
+我简称为c值，
+> 他是一个数据库自行预估的衡量字段选择性的指标。
+
+什么是选择性？就是这个字段可能出现的数据值的个数、种类。比如性别字段，可能出现的值就三种“男，女，双。这种就是低选择性（Low-cardinality）。相对的，一个uuid字段可能出现的就千千万了，这称为（High-cardinality）。
+
+如何使用查看这个值呢？
+> SHOW INDEX FROM [table-name]
+
+可以看到Cardinality字段。
+回到刚才的例子：
+由于我们这个表是innodb的，innodb对于cardinality的计算规则近似 SELECT COUNT(DISTINCT)... 所以
+```
+MariaDB [fun]> SELECT COUNT(DISTINCT last_name) AS cardinality FROM users;
++-------------+
+| cardinality |
++-------------+
+|           9 |
++-------------+
+```
+我们看到了结果是9，我们和数据总数比一比。
+9/10 = 90% 接近1哦，所以说数据重复率很低，适合建立一个索引。
+
+但是需要注意，cardinality终究只是一个预估值，本身就具有不确定性。同时，对于cardinality的维护消耗也是一个问题，不同的存储引擎有自己的维护规则。[参考这里](https://www.percona.com/blog/2008/09/03/analyze-myisam-vs-innodb/)
+和[这里](http://www.ywnds.com/?p=8378#comments)
+
+
+-----
+参考链接：
+- https://stackoverflow.com/questions/2566211/what-is-cardinality-in-mysql
+- https://medium.com/prismapp/indexing-mysql-with-examples-f426332ea3ec
+- 
+
