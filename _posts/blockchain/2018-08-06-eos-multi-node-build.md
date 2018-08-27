@@ -11,6 +11,8 @@ comments: false
 
 网上到处都有的：[EOS单节点手动安装启动教程](https://developers.eos.io/eosio-nodeos/docs/)
 其实官方文档真的写得很清楚了，大家多看看。
+希望你能够在尝试过单节点搭建后再来参照本文。
+所有的私钥别忘记导入钱包哦~
 
 
 ### 启动一个创世节点
@@ -70,3 +72,52 @@ eosio.vpay
 
 > cleos system newaccount eosio --transfer daoone EOS6zCzMRYHyxY1viMqrBHmN1zSUZ8q4SGLFoEHs51VQntZsjZTD4 --stake-net "100000.0000 SYS" --stake-cpu "100000.0000 SYS" --buy-ram "100.0000 SYS"
 这里我们创建了一个daoone的账号，这个账号将会是我们社区的主账号。
+
+### 添加多节点生产者
+（生产者=producer=BP）
+到此为止我们完成了单节点的搭建，现在我们希望加入更多的bp。
+eosio.prod可以用来管理特权的生产者账户
+在安装eosio.system合同后，我们希望尽快将eosio.msig设置为特权帐户，以便它可以代表eosio帐户进行授权。尽快eosio将辞职，eosio.prods将接管。
+使eosio.msig成为一个特权帐户。我们使用以下方法使eosio.msig有特权。
+> cleos push action eosio setpriv '["eosio.msig", 1]' -p eosio@active
+
+我们生成一个producer账户（这个步骤可以重复）
+> cleos --wallet-url http://localhost:8888/ system newaccount eosio --transfer accountnum11 EOS8L9ERoNbPtW7jCQhbNTgEpzLiq4jcJfZVA7cyqrgBjmydnfhHp --stake-net "100000.0000 SYS" --stake-cpu "100000.0000 SYS" --buy-ram-kbytes 8192
+> cleos --wallet-url http://localhost:8888/ system newaccount eosio --transfer accountnum12 EOS5fDwck24AF1buxmDTByttJv4y35c5xWN1vAKvt8pH34tAw44uB --stake-net "100000.0000 SYS" --stake-cpu "100000.0000 SYS" --buy-ram-kbytes 8192
+
+看到我们生成了两个BP账户分别是 accountnum11 accountnum12。
+
+### 注册producer
+有了账号没用，还需要将这两个账号通过合约注册为生产者。
+> cleos --wallet-url http://localhost:8888/  system regproducer accountnum11 EOS8L9ERoNbPtW7jCQhbNTgEpzLiq4jcJfZVA7cyqrgBjmydnfhHp https://accountnum11.com/EOS8L9ERoNbPtW7jCQhbNTgEpzLiq4jcJfZVA7cyqrgBjmydnfhHp
+> cleos --wallet-url http://localhost:8888/  system regproducer accountnum12 EOS5fDwck24AF1buxmDTByttJv4y35c5xWN1vAKvt8pH34tAw44uB https://accountnum12.com/EOS5fDwck24AF1buxmDTByttJv4y35c5xWN1vAKvt8pH34tAw44uB
+
+注册完我们可以用下面的命令查看一下：
+> cleos system listproducers
+
+### 启动其他生产者节点
+因为我们是在同一台主机下启动不同节点，所以我们做下文件夹的隔离，我们在~/Projects/blockchain/daoone/bps下建立多个producer的文件夹。
+同时我们要给原来的生产者添加 p2p-address 的配置，地址连接到除自己以外的 bp p2p地址。
+以及更换signature-provider为生产者自己的密钥对。
+> nodeos --blocks-dir ~/path/to/accountnum11/blocks --config-dir ~/path/to/accountnum11/ --data-dir ~/path/to/accountnum11/  --enable-stale-production --producer-name accountnum11 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::http_plugin --plugin eosio::history_api_plugin
+> nodeos --blocks-dir ~/path/to/accountnum12/blocks --config-dir ~/path/to/accountnum12/  --data-dir ~/path/to/accountnum12/  --enable-stale-production --producer-name accountnum12 --plugin eosio::producer_plugin --plugin eosio::chain_api_plugin --plugin eosio::http_plugin --plugin eosio::history_api_plugin
+
+注意：如果是新的链需要增加 --genesis-file-path 的配置。
+
+### 投票
+虽然我们注册并启动了bp节点，但是你会发现节点并未开始产块。
+这是因为我们还没有给bp投票，开始产块的要求是网络内的1.5亿系统代币被用于投票。
+那我们现在就给两个bp账户转账，让他们互投行贿。
+> cleos --wallet-url http://localhost:8888/ transfer eosio accountnum11 "100000000.0000 SYS" 
+
+抵押
+cleos --wallet-url http://localhost:8888/ system delegatebw accountnum11 accountnum12 "25000000.0000 SYS" "25000000.0000 SYS"
+
+只有抵押才有投票权重，我们假设三个账户（包括daoone账户），各抵押50000000SYS, 分别投给对方和自己，那每人获得1.5亿票。
+> cleos --wallet-url http://localhost:8888/ system voteproducer prods daoone accountnum11
+取消投票是这个命令：
+> cleos --wallet-url http://localhost:8888/ system voteproducer prods unapprove daoone accountnum11
+
+### 运转了
+当投票数满足1.5亿系统代币的阈值后，我们发现accountnum11和accountnum12正常出块了。
+而原先的eosio节点，成为了一个同步节点，只接受区块同步。
