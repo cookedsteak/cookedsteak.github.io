@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 滑溜溜的椭圆加密
-category: 区块链
+category: 技术
 keywords: 区块链,技术,椭圆曲线,加密,EOS,dapp
 comments: false
 ---

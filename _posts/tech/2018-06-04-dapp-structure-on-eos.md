@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 基于EOS的DAPP乱想
-category: 区块链
+category: 技术
 keywords: 区块链,技术,eos,EOS,dapp
 comments: false
 ---
