@@ -78,7 +78,7 @@
   margin: 0
   padding: 0
   list-style: none
-  border-top: 1px solid $tag-border-color
+  // border-top: 1px solid $tag-border-color
 
 
 .sidebar-tag
@@ -86,7 +86,7 @@
   line-height: $tag-height
   text-align: center
   color: $tag-color
-  border-bottom: 1px solid $tag-border-color
+  // border-bottom: 1px solid $tag-border-color
   transition: color .15s linear, box-shadow .15s linear
   -webkit-transition: color .15s linear, box-shadow .15s linear
   cursor: pointer
@@ -95,7 +95,7 @@
     box-shadow: inset 6px 0 0 $toc-bg
   &.active
     //color: $tag-active-color
-    color: #2EB695
+    color: #56bdd8
     box-shadow: inset $sidebar-left-width 0 0 $toc-bg
 
 
@@ -104,7 +104,7 @@
 #search-box
   position: relative
   height: $search-box-height
-  margin-bottom: 1px
+  // margin-bottom: 1px
   &:before
     @extend %icon
     @extend %icon-search
@@ -144,7 +144,7 @@
 
 #toc
   height: calc(100% - #{$search-box-height + 1})
-  border-right: 1px solid #aaa
+  // border-right: 1px solid #aaa
   padding-top: 15px
   background: $toc-bg
   overflow-y: auto
