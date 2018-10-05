@@ -16,7 +16,9 @@ beego的文档还是十分详细的。
 go 1.11 
 需要安装的两个一个bee工具，另一个就是beego的源码了。
 go 1.11建议关闭gomod的安装方式。
+
 > GO_MODULE111=off
+
 直接在bee文件夹下`make install`就可以了
 
 ### 项目结构
