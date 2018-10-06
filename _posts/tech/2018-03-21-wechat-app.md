@@ -2,9 +2,13 @@
 layout: post
 title: 微信小程序爬坑
 category: 技术
-keywords: 微信,小程序,前端,javascript,promise
+keywords: 微信,小程序,前端,javascript
 comments: false
 ---
+
+### 需求
+我们先从实际的需求出发， 接下去我们试着做一个小程序，
+主要的功能是帮助健身房的客户进行私教的预约。
 
 ### 有趣的小程序
 

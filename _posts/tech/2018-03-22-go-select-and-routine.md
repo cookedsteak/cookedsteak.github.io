@@ -2,8 +2,8 @@
 layout: post
 title: Golang 的 routine 和 select
 category: 技术
-keywords: golang,concurrency,select,routine,channel
-comments: false
+keywords: golang,concurrency,select,routine,channel,后端
+comments: true
 ---
 
 ### 前言

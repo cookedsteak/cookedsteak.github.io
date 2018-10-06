@@ -2,7 +2,7 @@
 layout: post
 title: 接触Beego
 category: 技术
-keywords: golang,beego,go,框架
+keywords: golang,beego,go,框架,后端
 comments: false
 ---
 
