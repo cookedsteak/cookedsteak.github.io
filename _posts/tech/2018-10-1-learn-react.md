@@ -89,3 +89,27 @@ ReactDOM.render(
 );
 ```
 
+所以总的一个页面就很简单的三大块：
+```
+// 引用头
+import React from "react";
+import ReactDOM from "react-dom";
+
+// 组件主体
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+
+// 本页填充
+ReactDOM.render(
+  <Welcome name="Goo" />, // 注意这里的组件使用语法（JSX）
+  document.getElementById('root')
+);
+```
+
+> <组件、函数名称 />
+就是这样规定的写法，这样能够被react解析。
+render方法中的第一个参数可以是上面形式的标签，也可以是函数，
+但是一般采用标签，因为能够控制标签的输入属性。
