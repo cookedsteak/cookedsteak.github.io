@@ -3,7 +3,7 @@ layout: post
 title: 如何演讲-如何打造难忘的演讲
 category: 支线任务
 keywords: 演讲,表达,沟通
-comments: false
+comments: true
 ---
 
 ### 做一个有目的的人
