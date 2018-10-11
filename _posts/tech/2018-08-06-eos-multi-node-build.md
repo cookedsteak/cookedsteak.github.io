@@ -3,7 +3,8 @@ layout: post
 title: EOS私链搭建以及多BP设置
 category: 技术
 keywords: 区块链,技术,eos,EOS,dapp,后端
-comments: false
+comments: true
+toc: true
 ---
 
 ### 前言
