@@ -6,7 +6,7 @@ keywords: react,前端,nodejs,javascript
 comments: true
 ---
 
-### 概述
+## 概述
 让前端写起来飘飘然，我想这应该就是react开发时候的感觉了吧。
 [React](https://reactjs.org)是个啥？可以去官网看看，说得很清楚。
 我选择React进行学习的一个原因是预备知识相对少，可以不用熟悉过多的dom属性（类vue中的），只要知道js，html，css的知识就够了。
@@ -27,7 +27,7 @@ comments: true
 
 我们就先从最简单的 create-react-app开始。
 
-### 入口
+## 入口
 直接npm安装 create-react-app。
 一个biu准的react-app，会出现以下的文件结构
 ```
@@ -46,7 +46,7 @@ README.md
 需要在js文件中引用两个基本的模块：React, ReactDOM
 启动单页应用只需要 npm start
 
-### 组件与函数，足矣
+## 组件与函数，足矣
 React是将dom元素填充显示成最终的html页面的。
 例如：
 ```
