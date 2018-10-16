@@ -19,6 +19,8 @@ comments: true
 [ERC865](https://github.com/ethereum/EIPs/issues/865)
 这个issue下引出了很多类似的解决方案。
 
+[关于gas支付方式的讨论](https://ethresear.ch/t/pos-and-economic-abstraction-stakers-would-be-able-to-accept-gas-price-in-any-erc20-token/721)
+
 ## 原理
 
 ### call
@@ -35,19 +37,47 @@ abi规则是：
 就是定义好数据结构，好让evm做序列化和反序列化。
 
 还有一种调用方式，我称作“生调用”。
-``` -solidity-
+``` 
+[solidity]
 bytes data = 0x2fbebd3800000000000000000000000000000000000000000000000000000022;
 address.call(data【将字节化后的方法和参数值拼起来的最后值】);
 ```
 就是把值给捏在一块儿了，然后打包一股脑传输。
-注意的是，这个值必须是32字节的倍数字节，不足的用0补足，规则就是上面ABI的规则，请自己参考。
+注意的是，这个值必须是32字节的倍数字节（hex换算是*2），不足的用0补足，规则就是上面ABI的规则，请自己参考。
+测试的时候请不要直接将abi后的data写死在合约中，据我测试下来，合约不支持动态的字节数call，所以还是从外面传入数据比较靠谱。
 
-如果我的参数大于32个字节怎么办？
+### 验证
+既然使用了代理模式，那如何验证这条消息就是本人发出的呢？
+第一个想到的就是签名的验证。
+eth中的信息加密签名算是比较简明的（可以看我的另一篇滑溜溜的椭圆曲线了解更多），我们用web3js可以直接输出结果
+```
+[js]
+const prik = "0xaabbbbccccsssdddd";
+let dataHash = web3.utils.soliditySha3(data);
+let sig = mySign(dataHash, prik);
+```
+dataHash就是把你需要签名的data，打包成一个摘要。
+然后用私钥prik签名。
+
+在验证的时候，我们只需要知道摘要后的hash，和签名，就能验证发送的data来自某个地址。
+```
+[solidity]
+address signer = ECRecovery.recover(keccak256(abi.encodePacked(data)), _sig);
+```
+ECRecovery我们用的是openzeppelin-solidity的代码。
 
 
 ### 模拟的场景
-用户调用合约增加计数。
+百闻不如一贱，我们就来实操一下，选个场景
+用户想通过一个中间合约来买weed，硬不硬核？
 
+我们有个中间合约
+Proxy代理，也就是我们代理执行的合约
+这个合约需要有一个delegateBuy的方法
+还要有一个verifyData的方法
+
+我们还有一个商店的合约
+Shop，这个合约中有记录每个地址购买的weed数量。
 
 
 
