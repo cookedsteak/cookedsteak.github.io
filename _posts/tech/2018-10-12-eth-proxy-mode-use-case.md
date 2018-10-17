@@ -16,10 +16,9 @@ comments: true
 让开发者帮你支付gas费用。要知道，gas支付最大的一个问题是无法进行代理支付，以及使用其他erc20支付。
 比如：我要用你的app，但是我只充值了你app的erc20代币，那我还要去充值eth。这就很麻烦了，不友好。所以我需要可以直接扣我的erc20代币就完成交易的模式。
 
-[ERC865](https://github.com/ethereum/EIPs/issues/865)
+- [ERC865](https://github.com/ethereum/EIPs/issues/865)
 这个issue下引出了很多类似的解决方案。
-
-[关于gas支付方式的讨论](https://ethresear.ch/t/pos-and-economic-abstraction-stakers-would-be-able-to-accept-gas-price-in-any-erc20-token/721)
+- [关于gas支付方式的讨论](https://ethresear.ch/t/pos-and-economic-abstraction-stakers-would-be-able-to-accept-gas-price-in-any-erc20-token/721)
 
 ## 原理
 
@@ -58,8 +57,7 @@ let sig = mySign(dataHash, prik);
 ```
 dataHash就是把你需要签名的data，打包成一个摘要。
 然后用私钥prik签名。
-
-在验证的时候，我们只需要知道摘要后的hash，和签名，就能验证发送的data来自某个地址。
+在验证的时候，我们只需要知道摘要后的hash和签名，就能验证发送的data来自某个地址。
 ```
 [solidity]
 address signer = ECRecovery.recover(keccak256(abi.encodePacked(data)), _sig);

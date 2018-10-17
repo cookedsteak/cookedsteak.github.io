@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 如何演讲-如何打造难忘的演讲
-category: 支线任务
+category: 支线
 keywords: 演讲,表达,沟通
 comments: true
 toc: true
