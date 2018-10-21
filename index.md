@@ -17,7 +17,7 @@ Hi, I 'm steak, locate in Shanghai, a developer who wants is eager to be a great
 ## HOBBYLIST
 
 - Cars
-- Model Guns
+- Guns
 - Garage Kit
 - Gundam
 - Digital Arts
