@@ -24,3 +24,8 @@ Hi, I 'm steak, locate in Shanghai, a developer who wants is eager to be a great
 - Cyberpunk
 - Boxing
 - Bangumi
+
+
+## 向命运妥协的广告
+虽说是广告，但是vultr的主机至少是在可以推荐的范围的。
+<a href="https://www.vultr.com/?ref=7451095"><img src="https://www.vultr.com/media/banner_1.png" width="728" height="90"></a>
