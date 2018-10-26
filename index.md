@@ -6,7 +6,7 @@ category: 关于我
 
 ## ...
 
-Hi, I 'm steak, locate in Shanghai, a developer who wants is eager to be a great painter.
+Hi, I'm steak, locate in Shanghai, a developer who is eager to be a great painter.
 
 - 我是牛排，会画画的码农，坐标魔都，DAOONER
 - 看番，曾痴迷于二次元，已脱坑
