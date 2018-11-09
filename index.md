@@ -16,7 +16,7 @@ I am also a [DAOONER](https://www.daoone.org).
 
 ![mainbg](assets/img/mainjpg.jpg)
 
-## HOBBYLIST
+## HOBBIES
 
 - Cars
 - Guns
