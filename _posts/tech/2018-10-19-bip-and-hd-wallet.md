@@ -42,7 +42,19 @@ HD钱包就很好解决了这个问题，现在我们需要引入一个新的东
 #### 1.生成一个助记词
 在单词库中随机挑选 2048 个单词。
 然后生成一个 128~256位的随机数（必须是32倍数）
+比如我选择一个256位的随机数，转换成16进制显示就是
+> 179e5af5ef66e5da5049cd3de0258c5339a722094e0fdbbbe0e96f148ae80924
 
+在随机数末尾加上校验码，校验码取SHA-256的前若干位，并使得总位数凑成11的倍数，即。上述随机数校验码的二进制表示为
+> 00010000
+
+校验码可以在用户输错了助记词后提醒用户
+
+将随机数+校验码按每11 bit一组，得到范围是0~2047的24个整数，把这24个整数作为索引，就得到了最多24个助记词，例如：
+
+> bleak version runway tell hour unfold donkey defy digital abuse glide please omit much cement sea sweet tenant demise taste emerge inject cause link
+
+其实我们最终也是拿着索引去抓词，所以只要词库数量足够，什么语言都行，比如汉字助记词
 
 #### 2.PBKDF2
 PBKDF2(Password-Based Key Derivation Function)是一个用来导出密钥的函数，常用于生成加密的密码。
