@@ -65,7 +65,7 @@ address signer = ECRecovery.recover(keccak256(abi.encodePacked(data)), _sig);
 ECRecovery我们用的是openzeppelin-solidity的代码。
 
 
-### 模拟的场景
+## 模拟的场景
 百闻不如一贱，我们就来实操一下，选个场景
 用户想通过一个中间合约来买weed，硬不硬核？
 
@@ -77,5 +77,7 @@ Proxy代理，也就是我们代理执行的合约
 我们还有一个商店的合约
 Shop，这个合约中有记录每个地址购买的weed数量。
 
+```
 
+```
 
