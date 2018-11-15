@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 以太坊智能合约入门
+title: 以太坊智能合约
 category: 技术
 keywords: 以太坊,智能合约,技术,区块链
 comments: false
@@ -62,7 +62,7 @@ comments: false
 #### 2. balance
 一个账户拥有的以太坊数量，单位为wei。1 Ether = 10^18 Wei
 #### 3. storageRoot
-这个账户所存储的内容的hash根值。这个状态的存储结构是Merkle树的结构。
+这个账户所存储的内容的hash根值。这个状态的存储结构是Merkle树的结构。 256位，存储的内容的根节点。RLP编码。
 #### 4. codeHash 
 这个状态是只有合约账户才会有值。因为合约账户有代码，是把代码（code,code,code）hash后作为codeHash保存。
 ![账户里的四大金刚](https://diycode.b0.upaiyun.com/photo/2018/99b8a5e448501d737a7ebf4d98b7af3f.png)
@@ -103,7 +103,7 @@ Hash（KECCAK-256）函数，把一长串数据用密码散列函数计算出一
 同时，有了这样的限制还可以方式那种死循环的合约执行。
 更详细的内容可以参见以太坊[黄皮书](https://github.com/ethereum/wiki/wiki/Design-Rationale#gas-and-fees)
 
-1. 账户的管理和存在方式有哪些？
+2. 账户的管理和存在方式有哪些？
 
 以太坊是一个全世界只有客户端的网络。
 所以账户应该是自主管理的，即没有中心化的账户管理系统。
