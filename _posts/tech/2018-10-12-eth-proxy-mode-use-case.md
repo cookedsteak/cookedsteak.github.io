@@ -57,7 +57,7 @@ let sig = mySign(dataHash, prik);
 ```
 dataHash就是把你需要签名的data，打包成一个摘要。
 然后用私钥prik签名。
-在验证的时候，我们只需要知道摘要后的hash和签名，就能验证发送的data来自某个地址。
+在验证的时候，我们只需要知道摘要后的hash和签名，就能验证发送的data来自某个地址。
 ```
 [solidity]
 address signer = ECRecovery.recover(keccak256(abi.encodePacked(data)), _sig);
