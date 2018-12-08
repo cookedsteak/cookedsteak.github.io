@@ -6,7 +6,7 @@ category: 关于我
 
 ## ...
 
-Hi, I'm steak, now in Shanghai, a pure developer who is eager to be a great painter. 
+To be a full stack creator~
 
 I am also a [DAOONER](http://www.daoone.org).
 
@@ -19,7 +19,7 @@ I am also a [DAOONER](http://www.daoone.org).
 ## HOBBIES
 
 - Cars
-- Guns
+- Guns Pistol & Revolver
 - Garage Kit
 - Gundam
 - Digital Arts
