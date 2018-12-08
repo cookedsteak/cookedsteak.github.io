@@ -13,8 +13,23 @@ gin 是一个 golang 的 web application/service framework。
 
 ## 目录结构
 实际上 gin 的项目并没有一个比较官方的目录结构，你觉得怎么方便怎么来，或者说，目录结构更遵循一般 golang 项目的规范，结合 golang 本身的一些特点。
+```
+- config  // 配置文件
+- controllers // 控制器
+- lib     // 通用函数库
+- middlewares // 中间件
+- models  // orm 模型层
+- routes  // 路由
+- test    // 测试
+- main.go // 主入口
+```
 
 ## 配件
+
+### OS.GetEnv
+.env 作为配置文件
+
+### XORM
 最常用的当然就是 orm 组件啦。这里我比较喜欢 xorm，不论是从运行效率还是编写手势上。
 
 不论是服务还是应用都会有配置需求，之前我会选择其他第三方配置库，但是我最近觉得 os 包自带的 Getenv已经够用了，所有的配置都在 .env 文件中。
