@@ -28,6 +28,8 @@ A先生：“牛排，能写一个放在店门口的人流统计系统吗？”
 - 运动方向
 
 ## 源码分析
+
+### 引用库
 ```python
 from collections import deque
 from imutils.video import WebcamVideoStream
@@ -37,6 +39,13 @@ import time
 import math
 ```
 上面是我们将会用到的包，除了cv2, time, math这些图像计算要用的包外，我们还找到一个封装好的视频处理+机器视觉包--[imutils](https://github.com/jrosebr1/imutils)，这个包作者就是我们说的洋吴克，他帮我们造了很多现成的轮子，比如视频流的异步处理（主要就是这个），图片截取优化等。
+
+### 轨迹
+既然是物体的进或出，那必定离不开“如何判断运动轨迹”。
+所以我们需要一个数组，来存放物体移动的每个时刻的轨迹坐标。
+```python
+traceList = []
+```
 
 
 ## 示例效果
