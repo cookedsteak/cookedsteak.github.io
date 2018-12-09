@@ -36,6 +36,8 @@ gin 是一个 golang 的 web application/service framework。
 A，B，A_B_rel
 这种情况直接使用 sql 会比较方便，然后将结果 decode 到 model 中。
 
+关于更新，orm的更新，每种库写法都不一样。
+
 
 ### 日志
 运行过程中的错误，我一般使用 sirupsen/logrus 这个库。
