@@ -29,10 +29,8 @@ gin 是一个 golang 的 web application/service framework。
 ### OS.GetEnv
 .env 作为配置文件
 不论是服务还是应用都会有配置需求，之前我会选择其他第三方配置库，但是我最近觉得 os 包自带的 Getenv已经够用了。
+不过偶尔也有些小坑，比如处理.env 文件中的特殊字符，一般我会使用双引号括起来。
 
-不过偶尔也有些小坑，比如处理.env 文件中的特殊字符，一般我会使用单引号括起来，至少我还不知道 “#” 这个如果出现如何处理。这个问题同样存在在所有 linux 系统中。问题看[这里]。(https://serverfault.com/questions/506053/how-does-one-properly-escape-a-leading-character-in-linux-etc-environment)
-
-如果要解决那或许只能更换配置库了。
 
 
 ### XORM
@@ -49,4 +47,6 @@ A，B，A_B_rel
 运行过程中的错误，我一般使用 sirupsen/logrus 这个库。
 他在 golang 自己的 log 上做了封装，还没研究透。
 
-缓存-redis，redis是我自己在 go-redis 基础上做了个封装，支持连接池，现在普通的操作足够用了。
+
+### 缓存
+缓存-redis，redis是我自己在 go-redis 基础上做了个封装，支持连接池。代码可以在[这里]()看
