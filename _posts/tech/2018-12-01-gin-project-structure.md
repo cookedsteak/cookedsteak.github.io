@@ -43,9 +43,18 @@ A，B，A_B_rel
 在使用 model 的过程中，千万不要用一表一 model 的思路，而是一个数据对象一个 model。有时候你会看见有些 model 他的字段设置并不遵循数据库的字段声明。诶嘿，这样才够 orm 嘛~
 
 
-### 日志
+### 运行日志
 运行过程中的错误，我一般使用 sirupsen/logrus 这个库。
 他在 golang 自己的 log 上做了封装，还没研究透。
+
+### 业务数据日志
+- influxDB
+  
+  时序数据库， made by golang。influxdb 对于数据的压缩率可谓是非常大的。influxDB + Grafana也是一种常用搭配（Grafana本身就很万金油）
+
+- ES 套件
+  
+  elasticsearch + logstash + filebeat + kibana 是很多日志系统的标配。一来是包装好的功能十分强大
 
 
 ### 缓存
