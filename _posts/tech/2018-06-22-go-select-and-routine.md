@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Golang 的 routine 和 select
+title: Golang 的 routine
 category: 技术
-keywords: golang,concurrency,select,routine,channel,后端
+keywords: golang,concurrency,routine,channel,后端,并发,线程,进程
 comments: true
 ---
 
@@ -37,7 +37,7 @@ GoRoutine是例程，可以简单理解为协程，通常goroutine会被当做c
 这两个有啥区别？
 用户模式无法执行特权指令，比如停止处理器，改变模式位，发起I/O操作。
 
-听起来高大上的东西，我们白话理解下。
+听起来高大上的东西，我们白话理解下。（*深入理解计算机系统 P510）
 首先我们要有一个系统进程，系统进程也是进程，他可以 fork
 很多自己，同时每个进程又可以有多个线程，我喜欢这么去理解内核线程。
 
@@ -53,8 +53,9 @@ GoRoutine是例程，可以简单理解为协程，通常goroutine会被当做c
 
 
 ## Goroutine Pool ?
-
-
+golang 对于自己的并发还是相当自信的，你可以看到标准库中各种 go func()，
+但是往往我们要结合实际业务场景，以及资源安全问题。所以一般还需要自己封装一个
+goroutine pool 去处理。
 
 
 
