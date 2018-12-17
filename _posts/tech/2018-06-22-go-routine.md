@@ -45,19 +45,37 @@ GoRoutine是例程，可以简单理解为协程，通常goroutine会被当做c
 
 内核线程模型：用户的某个线程直接对应系统的某个线程，1：1合作，这样用户就不用自己做异常控制流处理了，而且做到了系统级并发。但代价是开销增大，毕竟你用的是系统的线程调度资源。
 
-混合线程模型：结合上述两个模型的有点，变化多端的合作调用方式。诶嘿，go的 runtime调度器用的就是这种模式，我们称之为 GPM模型
+混合线程模型：结合上述两个模型的有点，变化多端的合作调用方式。诶嘿，go的 runtime调度器用的就是这种模式，我们称之为 GPM模型。
 
 *关键字：内核线程-》线程的实现模式-》上下文切换（CPU时间分片）-》模式切换（用户态到内核态）-》ECF（异常控制流）
 
 #### G-P-M 模型调度
+啥事 GPM 呢尔？
+G:Goroutine
+M:Machine(OS thread)
+P:Logical Processors
+
+Go 专门写了个 runtime 去做调度，
+runtime包里的 g 结构体就是 goroutine 的结构描述，里面的字段是用来跟踪栈并保存当前状态的。
+我们说过 goroutine 用的改进的混合模型，所以 GPM 的关系像这样：
+- G需要绑定在M上才能运行
+- M需要绑定P才能运行
+- 程序中的多个M并不会同时都处于执行状态，最多只有GOMAXPROCS个M在执行
 
 
 ## Goroutine Pool ?
 golang 对于自己的并发还是相当自信的，你可以看到标准库中各种 go func()，
-但是往往我们要结合实际业务场景，以及资源安全问题。所以一般还需要自己封装一个
-goroutine pool 去处理。
+但是往往我们要结合实际业务场景，以及资源安全问题。
+在有限的内存条件下，我们不可能根据进来的请求无限制请求新的处理协程。
+所以一般还需要自己封装一个 goroutine pool 去复用已有的空闲协程。
+
+如果我们自己做一个 goroutine pool 的话，可能需要注意哪些东西呢？
+其实 go 的标准库天生有为并发编程准备好的函数工具。sync, atomic, channel, select
+...巧用这些特性，你会造出一把好刀。
 
 
+
+关键词：
 
 
 
@@ -70,3 +88,4 @@ goroutine pool 去处理。
 - https://segmentfault.com/a/1190000006815341
 - https://talks.golang.org/2012/concurrency.slide#1
 - https://blog.heroku.com/concurrency_is_not_parallelism
+- https://povilasv.me/go-scheduler/
