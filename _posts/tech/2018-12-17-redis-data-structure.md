@@ -63,3 +63,4 @@ typedef struct zskiplist {
 } zskiplist;
 
 ```
+曾经我拿来用作排行榜的数据，感觉挺好用。
