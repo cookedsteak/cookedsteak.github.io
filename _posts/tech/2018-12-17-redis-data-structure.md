@@ -31,4 +31,35 @@ typedef struct listNode {
 当然，list 的用处不止消息队列
 
 ## SET
+是一个无序的String类型数据的集合，其中不会有重复的数据。
+Set 的实现用到了 hashmap，真正的值其实是存储在 hashmap 的 key 中的。
 
+set 类型的数据可以有 交并操作，所以很适合用来存一些标签。
+
+## HASH
+就是我们常用的 map，key 为 string类型。
+
+## STRING
+普通的key/value存储结构
+
+## SORTSET
+sortset 和SkipList有点关系，我们看下[源码](https://github.com/antirez/redis/blob/129f2d2746ca80451d8c84b223b568298020b125/src/server.h)：
+
+```
+typedef struct zskiplistNode {
+    sds ele;
+    double score;
+    struct zskiplistNode *backward;
+    struct zskiplistLevel {
+        struct zskiplistNode *forward;
+        unsigned long span;
+    } level[];
+} zskiplistNode;
+
+typedef struct zskiplist {
+    struct zskiplistNode *header, *tail;
+    unsigned long length;
+    int level;
+} zskiplist;
+
+```

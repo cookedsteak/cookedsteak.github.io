@@ -1,6 +1,6 @@
 ---
 layout: post
-title: xx的索引
+title: xx的索引·一
 category: 技术
 keywords: mysql,索引,数据库
 comments: true
@@ -65,7 +65,7 @@ MariaDB [fun]> EXPLAIN SELECT * FROM users WHERE last_name = 'Harahap';
 ```
 
 发觉好像有变化了，我们发现搜索范围从全表缩小到了两行，emm...这似乎说明了我们刚刚设置的索引有了效果。
-为毛呢，索引是什么原理呢？可以看下[该死的索引·二](/)。
+为毛呢，索引是什么原理呢？可以看下[xx的索引·二](/)。
 
 接下去的问题：我们如何才能知道我们的索引对于查询是有效果的呢？首先我们需要明白Mysql中的一个概念：
 
