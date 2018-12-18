@@ -33,3 +33,56 @@ bzr: ERROR: Not a branch: "/Users/steak/Projects/go/pkg/mod/cache/vcs/ca61c737a3
 ### 2. 一个指标一个measurement
 这样的存储结构，其实对于 influxDB 才是恰到好处的。
 一来设备可以用 tag 作为索引，二来设备的指标还能随时增减，并且不影响之前数据的展示。
+
+我们选择第二个方法来存储数据。
+influxdb中的数据推送需要两个初始化实例，
+- Client
+- BatchPoint
+Client就是一个保持连接的客户端实例。
+BatchPoint是需要推送数据的封装实例。
+
+首先我们新建一个Client实例：
+```
+var Influx client.Client
+// 一个很基本的单例模式
+func GetInflux() client.Client {
+	if Influx == nil {
+		c, err := client.NewHTTPClient(client.HTTPConfig{
+			Addr:     os.Getenv("INFLUXDB_HOST"),
+			//Username: username,
+			//Password: password,
+		})
+		if err != nil {
+			log.Fatalln("Error: ", err)
+		}
+		Influx = c
+	}
+
+	return Influx
+}
+```
+再来一个数据推送实例：
+```
+func NewInfluxBp(db string) client.BatchPoints {
+	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
+		Database:  db, // 库名，很明显
+		Precision: "s", // 表明了任何返回的时间戳的格式和精度，采用 rfc3339标准
+	})
+	if err != nil {
+		Dolog(err.Error(), "influxdb_error")
+		panic("influxdb_err")
+	}
+
+	return bp
+}
+```
+#### 推送数据
+有了推送条件后，我们就要用这两个实例开始推送数据了，我们也单独抽象一个方法：
+```
+
+```
+
+
+## 参考
+---
+- https://jasper-zhang1.gitbooks.io/influxdb/content/Introduction/getting_start.html
