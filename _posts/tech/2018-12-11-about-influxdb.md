@@ -79,8 +79,42 @@ func NewInfluxBp(db string) client.BatchPoints {
 #### 推送数据
 有了推送条件后，我们就要用这两个实例开始推送数据了，我们也单独抽象一个方法：
 ```
+func PushDataToInflux(deviceTag string, data map[string]interface{}) {
+	tags := map[string]string{"device": deviceTag}
+	c := GetInflux()
+	bp := NewInfluxBp("monitor") // 创建了名为 monitor 的 database
 
+	for k, v := range data {
+		fields := map[string]interface{}{"value": v}
+        // 一个k表示一个 measurement, tags 就是设备号
+		pt, err := client.NewPoint(k, tags, fields, time.Now())
+		if err != nil {
+			Dolog(err.Error(), "influxdb_error")
+		}
+		bp.AddPoint(pt) // 增加 batchpoint 记录
+	}
+	// 用 client 实例把 bp 写入数据库
+	if err := c.Write(bp); err != nil {
+		Dolog(err.Error(), "influxdb_error")
+	}
+
+	// 断开数据库连接
+	if err := c.Close(); err != nil {
+		Dolog(err.Error(), "influxdb_error")
+	}
+}
 ```
+
+在大概推送了几条数据后，我们来看看 influxdb 中存储的数据结构：
+这些是我们按照一个指标一存的表
+![m](/assets/img/influxdb/measurements.png)
+
+我们select ALERT_CODE表看下
+![t](/assets/img/influxdb/table.png)
+
+时间+ 设备 id + 存储的值，结构还是很清晰的。
+
+## 展现
 
 
 ## 参考
