@@ -19,7 +19,7 @@ bzr: ERROR: Not a branch: "/Users/steak/Projects/go/pkg/mod/cache/vcs/ca61c737a3
 ## 栗子
 
 我现在有一台工业设备 device1，我想要实时收集他的各个指标，比如：
-- 设备状态，string 类型
+- 设备状态，string 类型
 - 当前坐标，float array 类型
 - 设备轴温度，float 数据类型
 
@@ -28,7 +28,7 @@ bzr: ERROR: Not a branch: "/Users/steak/Projects/go/pkg/mod/cache/vcs/ca61c737a3
 在每个 database 中，又有了 measurement，意味记录的测量对象。你可以用表的概念去代入理解，虽然两者使用略有差异。
 
 ### 1. 一个设备一个measurement
-这个似乎是最常见的思路，一个设备一个作为一个测量对象，不论从语义上还是理解上都十分通顺。
+这个似乎是最常见的思路，一个设备一个作为一个测量对象，不论从语义上还是理解上都十分通顺。
 
 ### 2. 一个指标一个measurement
 这样的存储结构，其实对于 influxDB 才是恰到好处的。
