@@ -59,3 +59,17 @@ A，B，A_B_rel
 
 ### 缓存
 缓存-redis，redis是我自己在 go-redis 基础上做了个封装，支持连接池。但是 redis 库的版本比较旧，新版本写法会有区别。
+
+
+### 验证器
+验证器的好处，就是抽象出哪些需要频繁使用的验证逻辑，减少代码冗余和逻辑歧义。
+在很久很久以前~~我用的是 validator.v8，说不上好用，但是够。
+（现在应该是用 v9了，但是 v9有些写法没有文档，全靠看源码和猜，心累）
+v8 自带很多格式验证，什么字符唯一、手机、email...
+也支持自定义验证逻辑，然而就是这个自定义验证逻辑就十分蛋疼了，
+你要自己`RegisterValidation`，并且回调函数只支持 bool 返回值。要传入的无用参数也是一大堆，感受一下参数：
+```
+type Func func(v *Validate, topStruct reflect.Value, currentStruct reflect.Value, field reflect.Value, fieldtype reflect.Type, fieldKind reflect.Kind, param string) bool
+```
+好（ta）长（ma）呀（de）
+不过 v9似乎有所改进，改天看下 v9的自定义验证如何实现。
