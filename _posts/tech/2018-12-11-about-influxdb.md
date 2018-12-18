@@ -118,5 +118,4 @@ func PushDataToInflux(deviceTag string, data map[string]interface{}) {
 
 
 ## 参考
----
 - https://jasper-zhang1.gitbooks.io/influxdb/content/Introduction/getting_start.html
