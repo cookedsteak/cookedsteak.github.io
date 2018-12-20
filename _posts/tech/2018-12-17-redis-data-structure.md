@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 回到Redis的数据结构
+title: 回到Redis
 category: 技术
 keywords: redis,数据结构,经验,数据库,后端
 comments: true
@@ -64,3 +64,5 @@ typedef struct zskiplist {
 
 ```
 曾经我拿来用作排行榜的数据，感觉挺好用。
+
+## *Redis 的缓存穿透
