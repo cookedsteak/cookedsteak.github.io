@@ -36,6 +36,7 @@ MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记�
 InnoDB也使用B+Tree作为索引结构，但具体实现方式却与MyISAM截然不同。
 索引最终的 data 本身也是个索引
 ![innodb](/assets/img/trees/innodb.png)
+可以看到叶子节点存放了完整的数据记录，这种所以是聚簇索引
 
 ## 参考
 - https://www.percona.com/blog/2016/10/11/mysql-8-0-end-myisam/
