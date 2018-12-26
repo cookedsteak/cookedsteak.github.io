@@ -73,3 +73,26 @@ type Func func(v *Validate, topStruct reflect.Value, currentStruct reflect.Value
 ```
 好（ta）长（ma）呀（de）
 不过 v9似乎有所改进，改天看下 v9的自定义验证如何实现。
+
+
+### *一些经验
+
+- 今天
+  
+  怎么获取今天零点的时间？诶嘿嘿，看代码~
+  ```
+  func main()  {
+      timeStr := time.Now().Format("2006-01-02")
+      fmt.Println("timeStr:", timeStr)
+      t, _ := time.Parse("2006-01-02", timeStr)
+      timeNumber := t.Unix()
+      fmt.Println("timeNumber:", timeNumber)
+      }
+  ```
+  很多网上会告诉你这么写，嗯，大方向没错，先 Format 成天，再转成 unixtime。
+ 
+ 然鹅，事情并没有这么简单，你会发现，你所得到的时间比实际北京时间快了8小时。就是时区做的怪。所以你在上面的代码里还需要加几行：
+ ```
+ time.Local, _ = time.LoadLocation("Asia/Chongqing")
+ ```
+ 并把`time.Parse` 改成 `time.ParseInLocation`
