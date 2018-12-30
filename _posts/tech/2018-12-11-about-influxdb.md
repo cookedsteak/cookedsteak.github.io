@@ -114,8 +114,35 @@ func PushDataToInflux(deviceTag string, data map[string]interface{}) {
 
 时间+ 设备 id + 存储的值，结构还是很清晰的。
 
-## 展现
+但是，我们仔细看到存入的 value 类型。其实对于时序数据而言，string 和数组（其实也是 string）的数据对于观察数据变动情况并没有卵用。所以，最好的方式是把一个你要检测的不能再分割的数值插入到 influxdb 中。
+像是这样：
+![correct](/assets/img/influxdb/correctdata.png)
 
+## 读取
+其实在 influx 提供的 client 端读取数据是十分方便的，因为语法和传统的 sql 没有太大区别。同时，influxdb 本身还提供很多实用的函数工具。
+不过我们还是要用 golang 去做取数据的交互的，接下来就看看我是怎么写的：
+```
+func QueryDB(cli client.Client, cmd string) (res []client.Result, err error) {
+	q := client.Query{
+		Command:  cmd,
+		Database: "monitor",
+	}
+	if response, err := cli.Query(q); err == nil {
+		if response.Error() != nil {
+			return res, response.Error()
+		}
+		res = response.Results
+	} else {
+		return res, err
+	}
+	return res, nil
+}
+```
+可以看到，其实拿数据的方法还是挺蠢的，就是直接 raw sql。所以按照官方提示，我写了一个`QueryDB`的方法，用来执行我们的查询语句。
+
+
+## 展现
+只要我们有了时间维度和数据维度的两个值，什么图标插件，尽管来。不过我看很多运维会使用到 Grafana 来显示。
 
 ## 参考
 - https://jasper-zhang1.gitbooks.io/influxdb/content/Introduction/getting_start.html
