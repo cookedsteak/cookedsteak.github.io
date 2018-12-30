@@ -122,6 +122,8 @@ func PushDataToInflux(deviceTag string, data map[string]interface{}) {
 其实在 influx 提供的 client 端读取数据是十分方便的，因为语法和传统的 sql 没有太大区别。同时，influxdb 本身还提供很多实用的函数工具。
 不过我们还是要用 golang 去做取数据的交互的，接下来就看看我是怎么写的：
 ```
+// cmd就是我们的原生查询语句
+// client 是官方提供的 influx client
 func QueryDB(cli client.Client, cmd string) (res []client.Result, err error) {
 	q := client.Query{
 		Command:  cmd,
@@ -139,6 +141,12 @@ func QueryDB(cli client.Client, cmd string) (res []client.Result, err error) {
 }
 ```
 可以看到，其实拿数据的方法还是挺蠢的，就是直接 raw sql。所以按照官方提示，我写了一个`QueryDB`的方法，用来执行我们的查询语句。
+
+这里需要注意的，由于我们拿到的是一个 Result 数组，在判断数组有没有结果的时候会有点特别：
+```
+if len(res) > 0 && len(res[0].Series) > 0 {...}
+```
+我们判断了结果的长度，以及结果第一个元素的 Series的元素。
 
 
 ## 展现
