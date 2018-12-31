@@ -28,6 +28,10 @@ MVC很基本的结构都有 models, controllers, views(前后分离的话没有
 
 ## 路由
 我用的最多的还是 beego.Router，方便好用，也好管理维护。
+还有个需要注意的地方，在使用 RESTFUL 命名规则的时候，获取地址栏中参数（"my.com/user/:id"）的方式有两种：
+1. controller.GetInt/GetString...(":id")
+2. controller.ctx.Input.Param(":id")
+注意两个获取都需要加上`:`号。
 
 ## 控制器
 真的是能够从 beego 中嗅到弄弄的 webapplication 气味。controller 一般都会自己定义一个 BaseController，然后在里面塞入一些公用的方法。包括 Prepare 机制，很好解决了代码冗余问题。
