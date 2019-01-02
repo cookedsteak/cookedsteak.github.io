@@ -39,6 +39,15 @@ MVC很基本的结构都有 models, controllers, views(前后分离的话没有
 ## Session
 本次使用的项目我放弃了 jwt 的身份认证方式，改为了传统的 session cookie。另外惊讶的是，beego 对于session 的处理很方便。就是要根据 session 存储方式每次 `import _` 对应的驱动包有点麻烦。
 
+注意，在使用 redis 作为 session 驱动时候，密码等一系列参数的设置方式是这样的：
+```
+// SessionInit init redis session
+// savepath like redis server addr,pool size,password,dbnum,IdleTimeout second
+// e.g. 127.0.0.1:6379,100,astaxie,0,30
+
+"127.0.0.1:6379,100,password,..."
+```
+
 ## ORM
 其实我自己一直处于中立，也就是徘徊于使用与不使用 orm 之间。beego 的 orm 也算够好用，当然对于复杂的查询我更倾向于raw sql直接上。其实 orm 的难点永远不是你怎么用，而是你怎么设计 model，model 并不是单纯的表的抽象，而是你要用到的数据块的划分。
 
