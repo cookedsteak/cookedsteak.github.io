@@ -2,7 +2,7 @@
 layout: post
 title: golang并发安全试验
 category: 技术
-keywords: golang,go,并发,channel,routine
+keywords: golang,go,并发,channel,routine,context
 comments: true
 toc: true
 ---
@@ -11,7 +11,7 @@ toc: true
 
 ## 场景1-抢红包
 首先我们来考虑一个场景--红包。
-这里有个跨年红包，金额100，我们让阿猫，阿狗同时来抢这个红包，知道这个红包余额变为0。
+这里有个跨年红包，金额100，我们让阿猫，阿狗同时来抢这个红包，直到这个红包余额变为0。
 
 
 ## 场景2-微服务调用
@@ -31,3 +31,28 @@ func main() {
 }
 ```
 非常简单，普通的请求接受和 handler 定义。
+
+分别定义三个假的微服务，其中第三个将会是我们超时的哪位~
+```
+func microService1() int {
+	time.Sleep(1*time.Second)
+	return 1
+}
+
+func microService2() int {
+	time.Sleep(2*time.Second)
+	return 2
+}
+
+func microService3() int {
+	time.Sleep(10*time.Second)
+	return 3
+}
+```
+
+不管怎么样，先来个 handler
+```
+func calHandler(c *gin.Context) {
+    ...
+}
+```
