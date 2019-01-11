@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 日志事件系统
+title: 日志事件系统-1
 category: 技术
 keywords: 日志,kafka,elk,elasticsearch
 comments: true
