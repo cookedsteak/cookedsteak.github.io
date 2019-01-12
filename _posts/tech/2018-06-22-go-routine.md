@@ -50,7 +50,7 @@ GoRoutine是例程，可以简单理解为协程，通常goroutine会被当做co
 *关键字：内核线程-》线程的实现模式-》上下文切换（CPU时间分片）-》模式切换（用户态到内核态）-》ECF（异常控制流）
 
 #### G-P-M 模型调度
-啥事 GPM 呢尔？
+啥是 GPM 呢尔？
 G:Goroutine
 M:Machine(OS thread)
 P:Logical Processors
