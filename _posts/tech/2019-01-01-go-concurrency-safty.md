@@ -102,14 +102,77 @@ gin.Context 简单理解为贯穿整个 gin 声明周期的上下文容器，有
 有了这个 gin.Context， 我们就能在一个地方对 context 做出操作，而其他正在使用 context 的函数或方法，也会感受到 context 做出的变化。
 
 ```
-ctx, cancel := context.WithTimeout(c, 3*time.Second) //定义一个超时的 context
-defer cancel() // 在超时前完成操作，同样也要释放资源
+ctx, _ := context.WithTimeout(c, 3*time.Second) //定义一个超时的 context
 ```
 
 只要时间到了，我们就能用 ctx.Done() 获取到一个超时的 channel(通知)，然后其他用到这个 ctx 的地方也会停掉，并释放 ctx。
 一般来说，ctx.Done() 是结合 select 使用的。
-
+所以我们又需要一个循环来监听 ctx.Done()
 ```
-
+for {
+    select {
+    case <- ctx.Done():
+        // 返回结果
+}
 ```
+现在我们有两个 for 了，是不是能够合并下？
+```
+for {
+    select {
+    case resContainer = <-resChan:
+        sum += resContainer
+        fmt.Println("add", resContainer)
+    case <- ctx.Done():
+        fmt.Println("result:", sum)
+        return
+    }
+}
+```
+诶嘿，看上去不错。
+不过我们怎么在正常完成微服务调用的时候输出结果呢？
+看来我们还需要一个 flag
+```
+var count int
+for {
+    select {
+    case resContainer = <-resChan:
+        sum += resContainer
+        count ++
+        fmt.Println("add", resContainer)
+        if count > 2 {
+            fmt.Println("result:", sum)
+            return
+        }
+    case <- ctx.Done():
+        fmt.Println("timeout result:", sum)
+        return
+    }
+}
+```
+我们加入一个计数器，因为我们只是调用3次微服务，所以当 count 大于2的时候，我们就应该结束并输出结果了。
 
+这是一种偷懒的方法，因为我们知道了调用微服务的次数，如果我们并不知道，或者之后还要添加呢？
+手动每次改 count 的判断阈值会不会太沙雕了？这时候我们就要加入 sync 包了。
+
+我们来改下之前微服务调用的代码块
+```
+var success = make(chan int, 1) // 成功的通道标识
+wg := sync.WaitGroup{}
+wg.Add(3)
+go func() {
+    resChan <- microService1()
+    wg.Done()
+}()
+
+go func() {
+    resChan <- microService2()
+    wg.Done()
+}()
+
+go func() {
+    resChan <- microService3()
+    wg.Done()
+}()
+wg.Wait()
+success <- 1
+```
