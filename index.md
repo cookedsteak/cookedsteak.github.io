@@ -17,6 +17,21 @@ I am also a [DAOONER](http://www.daoone.org).
 
 ![mainbg](assets/img/mainjpg.jpg)
 
+## SKILLS
+啥都想玩得我：
+
+- Go
+- Python
+- PHP
+- Javascript/TypeScript
+- SQL
+- CSS
+- C++
+- HTML
+- Solidity
+- Unix shell
+  ...
+
 ## HOBBIES
 
 - Cars

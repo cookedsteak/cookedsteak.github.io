@@ -49,8 +49,12 @@ func microService3() int {
 ```
 func calHandler(c *gin.Context) {
     ...
+	c.JSON(http.StatusOK, gin.H{"code":200, "result": sum})
+	return
 }
 ```
+一个典型的 gin Response，我们先不用在意 sum 是什么。
+
 #### 要点1--并发调用
 
 直接用 go 就好了嘛~
@@ -88,6 +92,7 @@ for {
 这样一来我们就有一个 sum 来计算每次从 resChan 中拿出的结果了。
 
 #### 要点2--超时信号
+
 还没结束，说好的超时处理呢？
 为了实现超时处理，我们需要引入一个东西，就是 context，[什么是 context ?](https://gocn.vip/article/373)
 我们这里只使用 context 的一个特性，超时通知（其实这个特性完全可以用 channel 来替代）。
@@ -149,7 +154,7 @@ for {
 
 #### 要点3--并发中的等待
 上面的计时器是一种偷懒的方法，因为我们知道了调用微服务的次数，如果我们并不知道，或者之后还要添加呢？
-手动每次改 count 的判断阈值会不会太沙雕了？这时候我们就要加入 sync 包了。
+手动每次改 count 的判断阈值会不会太不优雅了？这时候我们就可以加入 sync 包。
 我们将会使用的 sync 的一个特性是 WaitGroup。它的作用是等待一组协程运行完毕后，执行接下去的步骤。
 
 我们来改下之前微服务调用的代码块：
@@ -174,27 +179,63 @@ go func() {
 wg.Wait() // 直到我们前面三个标识都被 Done 了，否则程序一直会阻塞在这里
 success <- 1 // 我们发送一个成功信号到通道中
 ```
+`注意`：如果我们直接把上面的代码放到 calHandler 里，会出现一个问题，WaitGroup不论怎么样都会堵塞我们的正常情况输出（死活都要让你超时）。
+所以，我们把上面这段和业务逻辑相关的代码单独抽离出来，并包装一下。
+```
+// rc 是结果 channel, success 是成功与否的 flag channel
+func MyLogic(rc chan<- int, success chan<- int) {
+	wg := sync.WaitGroup{} // 创建一个 waitGroup 组
+	wg.Add(3) // 我们往组里加3个标识，因为我们要运行3个任务
+	go func() {
+		rc <- microService1()
+		wg.Done() // 完成一个，Done()一个
+	}()
+
+	go func() {
+		rc <- microService2()
+		wg.Done()
+	}()
+
+	go func() {
+		rc <- microService3()
+		wg.Done()
+	}()
+
+	wg.Wait() // 直到我们前面三个标识都被 Done 了，否则程序一直会阻塞在这里
+	success <- 1 // 我们发送一个成功信号到通道中
+}
+```
+最终，这个 MyLogic 还是要作为一个协程运行的。
+(多谢@TomorrowWu和@chenqinghe提醒)
 
 既然我们有了 success 这个信号，那么再把它加入到监控 for 循环中，并做些修改，删除原来 count 判断的部分。
 ```
-go func() {
-    for {
-        select {
-        case resContainer = <-resChan:
-            sum += resContainer
-            fmt.Println("add", resContainer)
-        case <- success:
-            fmt.Println("result:", sum)
-            return
-        case <- ctx.Done():
-            fmt.Println("result:", sum)
-            return
-        }
-    }
-}()
+for {
+	select {
+	case resContainer = <-resChan:
+		sum += resContainer
+		fmt.Println("add", resContainer)
+	case <- success:
+		fmt.Println("result:", sum)
+		return
+	case <- ctx.Done():
+		fmt.Println("result:", sum)
+		return
+	}
+}
 ```
-三个 case，分工明确，一个用来拿服务输出的结果并计算，一个用来做最终的完成输出，一个是超时输出。
-同时我们将这个循环监听，也作为协程运行。
+三个 case，分工明确，
+`case resContainer = <-resChan:`用来拿逻辑的输出的结果并计算
+
+`case <- success:`是理想情况下的正常输出
+
+`case <- ctx.Done():`是超时情况下的输出
+
+我们再润色一下，把后两个 case 的 `fmt.Println("result:", sum)`改为 gin 的标准 http Response
+```
+c.JSON(http.StatusOK, gin.H{"code":200, "result": sum})
+return
+```
 
 至此，所有的主要代码都完成了。下面是完全版
 ```
@@ -216,50 +257,54 @@ import (
 func calHandler(c *gin.Context) {
 	var resContainer, sum int
 	var success, resChan = make(chan int), make(chan int, 3)
-	ctx, _ := context.WithTimeout(c, 3*time.Second)
+	ctx, cancel := context.WithTimeout(c, 5*time.Second)
+	defer cancel()
 
-	go func() {
-		for {
-			select {
-			case resContainer = <-resChan:
-				sum += resContainer
-				fmt.Println("add", resContainer)
-			case <- success:
-				fmt.Println("result:", sum)
-				return
-			case <- ctx.Done():
-				fmt.Println("result:", sum)
-				return
-			}
+	// 真正的业务逻辑
+	go MyLogic(resChan, success)
+
+	for {
+		select {
+		case resContainer = <-resChan:
+			sum += resContainer
+			fmt.Println("add", resContainer)
+		case <- success:
+			c.JSON(http.StatusOK, gin.H{"code":200, "result": sum})
+			return
+		case <- ctx.Done():
+			c.JSON(http.StatusOK, gin.H{"code":200, "result": sum})
+			return
 		}
-	}()
-
-	wg := sync.WaitGroup{}
-	wg.Add(3)
-	go func() {
-		resChan <- microService1()
-		wg.Done()
-	}()
-
-	go func() {
-		resChan <- microService2()
-		wg.Done()
-	}()
-
-	go func() {
-		resChan <- microService3()
-		wg.Done()
-	}()
-	wg.Wait()
-	success <- 1
-
-	return
+	}
 }
 
 func main() {
 	r := gin.New()
 	r.GET("/calculate", calHandler)
-    http.ListenAndServe(":8008", r)
+
+	http.ListenAndServe(":8008", r)
+}
+
+func MyLogic(rc chan<- int, success chan<- int) {
+	wg := sync.WaitGroup{} // 创建一个 waitGroup 组
+	wg.Add(3) // 我们往组里加3个标识，因为我们要运行3个任务
+	go func() {
+		rc <- microService1()
+		wg.Done() // 完成一个，Done()一个
+	}()
+
+	go func() {
+		rc <- microService2()
+		wg.Done()
+	}()
+
+	go func() {
+		rc <- microService3()
+		wg.Done()
+	}()
+
+	wg.Wait() // 直到我们前面三个标识都被 Done 了，否则程序一直会阻塞在这里
+	success <- 1 // 我们发送一个成功信号到通道中
 }
 
 func microService1() int {
@@ -273,7 +318,7 @@ func microService2() int {
 }
 
 func microService3() int {
-	time.Sleep(10*time.Second)
+	time.Sleep(6*time.Second)
 	return 3
 }
 ```
