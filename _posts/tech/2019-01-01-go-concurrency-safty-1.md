@@ -225,6 +225,7 @@ for {
 }
 ```
 三个 case，分工明确，
+
 `case resContainer = <-resChan:`用来拿逻辑的输出的结果并计算
 
 `case <- success:`是理想情况下的正常输出
