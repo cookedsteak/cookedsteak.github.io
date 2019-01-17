@@ -24,6 +24,7 @@ comments: false
 (一切皆文件)[]
 
 ## 代码思路
+因为 http server 的运行需要一个监听对象，该对象包含了我们需要监听的
 ```
 func main() {
     主函数，初始化配置
@@ -105,13 +106,11 @@ func serve(config srvCfg, handler http.Handler) {
 	var err error
 	// get tcp listener
 	cfg.ln, err = getListener()
-
 	if err != nil {
 		panic(err)
 	}
 
 	// return an http Server
-	// in this a realtime server is running
 	srv := start(handler)
 
 	// create a wait routine
@@ -124,24 +123,12 @@ func serve(config srvCfg, handler http.Handler) {
 ```
 很简单，我们把配置都准备好了，然后还注册了一个 handler--输出 Hello, world!
 
+serve 函数的内容就和我们之前的思路一样，只不过多了些错误判断。
 
-
-
-可以看到 serve 是我们的核心函数
-```
-func serve(config srvCfg, handler http.Handler) {
-	// 省略代码...
-	cfg.ln, err = getListener() // 初始化 listen file
-    // 省略代码...
-	srv := start(handler) // 拿着 listen file 开启 http service
-    // 省略代码...
-	err = waitForSignals(srv) // 监听外部信号
-    // 省略代码...
-}
-```
+接下去，我们一个一个看里面的函数...
 
 ## 获取 listen
-
+也就是我们的 getListener() 函数
 
 ## 监听信号
 
