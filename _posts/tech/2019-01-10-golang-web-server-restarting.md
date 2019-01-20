@@ -20,8 +20,9 @@ comments: false
 新的开启，老的关掉，就这么简单。
 
 #### 防看不懂须知 
-(Unix domain socket)[https://en.wikipedia.org/wiki/Unix_domain_socket]
-(一切皆文件)[]
+[Unix domain socket](https://en.wikipedia.org/wiki/Unix_domain_socket)
+
+[一切皆文件]()
 
 
 ## 代码思路
@@ -206,7 +207,7 @@ func waitForSignals(srv *http.Server) error {
 - SIGTERM 
 - SIGINT
 - SIGHUP
-(关于信号)[https://unix.stackexchange.com/questions/251195/difference-between-less-violent-kill-signal-hup-1-int-2-and-term-15]
+[关于信号](https://unix.stackexchange.com/questions/251195/difference-between-less-violent-kill-signal-hup-1-int-2-and-term-15)
 
 如果实在搞不清这三个信号的区别，只要明白我们通过区分信号，留给了进程自己判断处理的余地。
 
