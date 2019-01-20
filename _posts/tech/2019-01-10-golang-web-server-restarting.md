@@ -7,7 +7,7 @@ comments: false
 ---
 
 本文参考 [GRACEFULLY RESTARTING A GOLANG WEB SERVER](https://tomaz.lovrec.eu/posts/graceful-server-restart/)
-进行整理和归纳。
+进行归纳和说明。
 
 ## 问题
 因为 golang 是编译型的，所以当我们修改一个用 go 写的服务的配置后，需要重启该服务，有的甚至还需要重新编译，再发布。如果在重启的过程中有大量的请求涌入，能做的无非是分流，或者堵塞请求。不论哪一种，都不优雅~，所以slax0r以及他的团队，就试图探寻一种更加平滑的，便捷的重启方式。
@@ -22,6 +22,7 @@ comments: false
 #### 防看不懂须知 
 (Unix domain socket)[https://en.wikipedia.org/wiki/Unix_domain_socket]
 (一切皆文件)[]
+
 
 ## 代码思路
 因为 http server 的运行需要一个监听对象，该对象包含了我们需要监听的
@@ -119,7 +120,6 @@ func serve(config srvCfg, handler http.Handler) {
 		panic(err)
 	}
 }
-
 ```
 很简单，我们把配置都准备好了，然后还注册了一个 handler--输出 Hello, world!
 
@@ -127,10 +127,79 @@ serve 函数的内容就和我们之前的思路一样，只不过多了些错�
 
 接下去，我们一个一个看里面的函数...
 
-## 获取 listen
+## 获取 listener
 也就是我们的 getListener() 函数
+```
+func getListener() (net.Listener, error) {
+    // 第一次执行不会 importListener
+	ln, err := importListener()
+	if err == nil {
+		fmt.Printf("imported listener file descriptor for addr: %s\n", cfg.addr)
+		return ln, nil
+	}
+    // 第一次执行会 createListener
+	ln, err = createListener()
+	if err != nil {
+		return nil, err
+	}
+
+	return ln, err
+}
+
+func importListener() (net.Listener, error) {
+    ...
+}
+
+func createListener() (net.Listener, error) {
+	fmt.Println("首次创建 listener", cfg.addr)
+	ln, err := net.Listen("tcp", cfg.addr)
+	if err != nil {
+		return nil, err
+	}
+
+	return ln, err
+}
+```
+因为第一次不会执行 importListener， 所以我们暂时不需要知道 importListener 里是怎么实现的。
+只肖明白 createListener 返回了一个监听对象。
+
+而后就是我们的 start 函数
+```
+func start(handler http.Handler) *http.Server {
+	srv := &http.Server{
+		Addr: cfg.addr,
+		Handler: handler,
+	}
+	// start to serve
+	go srv.Serve(cfg.ln)
+	fmt.Println("server 启动完成，配置信息为：",cfg.ln)
+	return srv
+}
+```
+很明显，start 传入一个 handler，然后协程运行一个 http server。
 
 ## 监听信号
-
+监听信号应该是我们这篇里面重头戏的入口，我们首先来看下代码：
+```
+func waitForSignals(srv *http.Server) error {
+	sig := make(chan os.Signal, 1024)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
+	for {
+		select {
+		case s := <-sig:
+			switch s {
+			case syscall.SIGHUP:
+				err := handleHangup() // 关闭
+				if err == nil {
+					// no error occured - child spawned and started
+					return shutdown(srv)
+				}
+			case syscall.SIGTERM, syscall.SIGINT:
+				return shutdown(srv)
+			}
+		}
+	}
+}
+```
 
 ## 父子间的对话
