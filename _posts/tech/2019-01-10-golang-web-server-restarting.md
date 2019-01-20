@@ -201,5 +201,19 @@ func waitForSignals(srv *http.Server) error {
 	}
 }
 ```
+首先建立了一个通道，这个通道用来接收系统发送到程序的命令，比如`kill -9 myprog`，
+这个 `9` 就是传到通道里的。我们用 Notify 来限制会产生响应的信号，这里有：
+- SIGTERM 
+- SIGINT
+- SIGHUP
+(关于信号)[https://unix.stackexchange.com/questions/251195/difference-between-less-violent-kill-signal-hup-1-int-2-and-term-15]
+
+如果实在搞不清这三个信号的区别，只要明白我们通过区分信号，留给了进程自己判断处理的余地。
+
+然后我们开启了一个循环监听，显而易见地，监听的就是系统信号。
+当信号为 `syscall.SIGHUP` ，我们就要重启进程了。
+而当信号为 `syscall.SIGTERM, syscall.SIGINT`时，我们直接关闭进程。
+
+于是乎，我们就要看看，`handleHangup`里面到底做了什么。
 
 ## 父子间的对话
