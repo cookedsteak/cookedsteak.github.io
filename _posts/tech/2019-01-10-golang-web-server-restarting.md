@@ -5,7 +5,6 @@ category: 技术
 keywords: golang,interface,go,框架,后端
 comments: false
 ---
-
 本文参考 [GRACEFULLY RESTARTING A GOLANG WEB SERVER](https://tomaz.lovrec.eu/posts/graceful-server-restart/)
 进行归纳和说明。
 
@@ -31,7 +30,7 @@ comments: false
 运行程序，过程中打开一个新的 console，输入 `kill -1 [进程号]`，你就能看到优雅重启的进程了。
 
 ## 代码思路
-```
+``` go
 func main() {
     主函数，初始化配置
     调用serve()
@@ -65,7 +64,7 @@ func waitForSignal() {
 
 ## 定义结构体
 我们抽象出两个结构体，描述程序中公用的数据结构
-```
+```go
 var cfg *srvCfg
 type listener struct {
 	// Listener address
@@ -95,7 +94,7 @@ srvCfg 是我们的全局环境配置，包含 socket file 路径，服务监听
 
 ## 入口
 看看我们的 main 长什么样子
-```
+```go
 func main() {
 	serve(srvCfg{
 		sockFile: "/tmp/api.sock",
@@ -134,7 +133,7 @@ serve 函数的内容就和我们之前的思路一样，只不过多了些错�
 
 ## 获取 listener
 也就是我们的 getListener() 函数
-```
+```go
 func getListener() (net.Listener, error) {
     // 第一次执行不会 importListener
 	ln, err := importListener()
@@ -169,7 +168,7 @@ func createListener() (net.Listener, error) {
 只肖明白 createListener 返回了一个监听对象。
 
 而后就是我们的 start 函数
-```
+```go
 func start(handler http.Handler) *http.Server {
 	srv := &http.Server{
 		Addr: cfg.addr,
@@ -185,7 +184,7 @@ func start(handler http.Handler) *http.Server {
 
 ## 监听信号
 监听信号应该是我们这篇里面重头戏的入口，我们首先来看下代码：
-```
+```go
 func waitForSignals(srv *http.Server) error {
 	sig := make(chan os.Signal, 1024)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
@@ -225,7 +224,7 @@ func waitForSignals(srv *http.Server) error {
 进程之间的优雅重启，我们可以看做是一次愉快的父子对话，
 爸爸给儿子开通了一个热线，爸爸通过热线把现在正在监听的端口信息告诉儿子，
 儿子在接受到必要的信息后，子承父业，开启新的空进程，告知爸爸，爸爸正式退休。
-```
+```go
 func handleHangup() error {
 	c := make(chan string)
 	defer close(c)
@@ -267,7 +266,7 @@ socketListener 开启了一个新的 unix socket 通道，同时监听通道的�
 
 `handleHangup` 里面的东西有点多，不要慌，我们一个一个来看。
 先来看 `socketListener`：
-```
+```go
 func socketListener(chn chan<- string, errChn chan<- error) {
 	// 创建 socket 服务端
 	fmt.Println("创建新的socket通道")
@@ -320,7 +319,7 @@ func socketListener(chn chan<- string, errChn chan<- error) {
 直到发送完毕，才会再告知 `handlerHangup` `listener_sent`。
 
 下面是 acceptConn 的代码，并没有复杂的逻辑，就是等待子程序请求、处理超时和错误。
-```
+```go
 func acceptConn(l net.Listener) (c net.Conn, err error) {
 	chn := make(chan error)
 	go func() {
@@ -348,7 +347,7 @@ func acceptConn(l net.Listener) (c net.Conn, err error) {
 ```
 
 还记的我们之前定义的 listener 结构体吗？这时候就要派上用场了：
-```
+```go
 func sendListener(c net.Conn) error {
 	fmt.Printf("发送老的 listener 文件 %+v\n", cfg.ln)
 	lnFile, err := getListenerFile(cfg.ln)
@@ -392,7 +391,7 @@ func getListenerFile(ln net.Listener) (*os.File, error) {
 
 说了这么多都是爸爸进程的代码，中间我们跳过了创建子进程，
 那下面我们来看看 `fork`，也是一个重头戏：
-```
+```go
 func fork() (*os.Process, error) {
 	// 拿到原监听文件描述符并打包到元数据中
 	lnFile, err := getListenerFile(cfg.ln)
@@ -433,7 +432,7 @@ func fork() (*os.Process, error) {
 ```
 当执行 `StartProcess` 的那一刻，你会意识到，子进程的执行会回到最初的地方，也就是 main 开始。
 这时候，我们 [获取 listener](##获取-listener)中的 `importListener` 方法就会被激活：
-```
+```go
 func importListener() (net.Listener, error) {
 	// 向已经准备好的 unix socket 建立连接，这个是爸爸进程在之前就建立好的
 	c, err := net.Dial("unix", cfg.sockFile)
