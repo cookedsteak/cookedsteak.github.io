@@ -10,3 +10,6 @@ toc: true
 
 ## C 社会科学总论
 - 周雪光老师的主页-https://web.stanford.edu/~xgzhou/zhou_home_Chinese.html
+
+## T 工业技术
+- 比较不错的 tensorflow 教程-https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/
