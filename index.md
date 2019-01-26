@@ -18,8 +18,7 @@ I am also a [DAOONER](http://www.daoone.org).
 ![mainbg](assets/img/mainjpg.jpg)
 
 ## SKILLS
-啥都想玩得我：
-
+啥都想玩：
 - Go
 - Python
 - PHP
@@ -30,6 +29,7 @@ I am also a [DAOONER](http://www.daoone.org).
 - HTML
 - Solidity
 - Unix shell
+- C#
   ...
 
 ## HOBBIES

@@ -44,3 +44,7 @@ comments: false
 }
 ```
 我们就来细细评鉴一下这个参数中有哪些不合理的地方。
+
+# 1.日期
+我们可以看到，在请求报文中，`checkIn`，`lastnight`，`checkOut`，都使用了黏在一起的年月日形式，YYYYMMDD，虽然这种形式的可读性也不差，但是对于跨语言解析的便利性上就不好说了。
+其实作为时间，用 [ISO8601](https://www.cl.cam.ac.uk/~mgk25/iso-time.html) (YYYY-MM-DD)，这样的通用标准形式会更加便捷。不论是从 encode 还是 decode 来说，比如 javascript 就能用 `Date.parse(YYYY-MM-DD)` 直接解析出所代表的 unix timestamp。
