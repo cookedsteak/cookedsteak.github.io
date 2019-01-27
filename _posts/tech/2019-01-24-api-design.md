@@ -44,7 +44,52 @@ comments: false
 }
 ```
 我们就来细细评鉴一下这个参数中有哪些不合理的地方。
-
-# 1.日期
+---
+### 1.日期
 我们可以看到，在请求报文中，`checkIn`，`lastnight`，`checkOut`，都使用了黏在一起的年月日形式，YYYYMMDD，虽然这种形式的可读性也不差，但是对于跨语言解析的便利性上就不好说了。
 其实作为时间，用 [ISO8601](https://www.cl.cam.ac.uk/~mgk25/iso-time.html) (YYYY-MM-DD)，这样的通用标准形式会更加便捷。不论是从 encode 还是 decode 来说，比如 javascript 就能用 `Date.parse(YYYY-MM-DD)` 直接解析出所代表的 unix timestamp。
+
+### 2.ID与数字
+如果一个数字代表是 ID，即用来描述对象唯一的数字。那么最好是用 string 类型的，比如请求结构体
+`roomIds`，`propIds`。
+
+如果一个数字是用来描述数量或者值的，那不要使用 string，否则会有歧义并且不好计算。如上头的`numAdult`，`numChild`。
+
+虽然上面数字与 ID 的区分并不是强制要求，但是注意，不论你使用哪一种形式，保持统一。你可以看到：`roomId`和`roomIds`，明明只是一个是另一个的集合，缺使用了两种表示形式，这不免让人误解。
+---
+在说完了 Request 部分，我们看下返回的 Response。
+我们按照
+```
+{
+    "checkIn": "20190501",
+    "checkOut": "20190503",
+    "ownerId": "25748",
+    "numAdult": "2",
+    "numChild": "0"
+}
+```
+作为请求，得到了如下的 Response：
+```
+{
+    "10328": {
+        "roomId": "10328",
+        "propId": "4478",
+        "roomsavail": "0"
+    },
+    "13219": {
+        "roomId": "13219",
+        "propId": "5729",
+        "roomsavail": "0"
+    },
+    "14900": {
+        "roomId": "14900",
+        "propId": "6779",
+        "roomsavail": 1
+    },
+    "checkIn": "20190501",
+    "lastNight": "20190502",
+    "checkOut": "20190503",
+    "ownerId": 25748,
+    "numAdult": 2
+}
+```
