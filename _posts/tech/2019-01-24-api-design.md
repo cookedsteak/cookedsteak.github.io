@@ -204,10 +204,27 @@ comments: false
 
 有点霸王条约，而且条件说明不清晰，包括冻结条件，同时在接口请求限制上有点严格。
 
-
-### 5.接口展现
+### 5.文档展现
 推荐使用接口展示的工具，[Swagger](https://swagger.io/)或者[Apiary](https://apiary.io/)。
-
+Beds24的接口文档可谓是十分原汁原味了，没有主要的 index 引导，很容易让开发者看得云里雾里。
+
+### 6.安全
+这里原作者主要吐槽了 Beds24 接口不需要鉴权也能够调用的 BUG。
+既然说到了安全，我们就稍微延展一下。
+
+如今常见的 API 调用鉴权方式主要有以下几种：
+- Basic Authorization
+- Oauth Token
+- Session
+  
+#### Basic Authorization
+鉴权的方式相对简单，就是在 Http Header 增加经过base64运算后的 username + password。相信你能够发现，这样的鉴权方式没有过期时间，传输内容安全验证的措施，所以如果你的 api 需要上述两个方面的保证的话，不建议使用这种鉴权方式。
+
+#### Session
+通过一个唯一的 key，验证在共享内存中的用户状态。单实例应用常用的解决方案。唯一的问题在于，共享内存中的隔离机制，因为是共享 session 的，所以 session 的读取安全性很重要。
+
+#### Oauth Token
+不同与 Session, Oauth Token（下面简称 token）不需要在共享内存中记录用户状态。token 本身就会包含用户的基本信息、权限范围、有效时间，当然这些都是经过加密的。调用者将 token 放在 http header 中进行请求。一般提供 Oauth 验证方式的接口，都会附加一个类似刷新 refresh token 的接口，用来解决 token 过期的问题。
 
 
 
