@@ -9,9 +9,6 @@ comments: false
 > 接口的种类有好几种，http、api、RPC、RMI、WebService、RESTful
 > 这篇主要总结 http 接口和 api 接口
 
-## http接口的命名
-> 参考 [RESTful API Design. Best Practices in a Nutshell.](https://blog.philipphauer.de/restful-api-design-best-practices/) 进行总结
-
 ## api接口请求与返回
 > 参考 [How NOT to design APIs](https://blog.usejournal.com/how-not-to-design-restful-apis-fb4892d9057a) 进行总结
 
@@ -164,8 +161,8 @@ comments: false
 增加了 `properties` 数据块，很明确区分了数据内容，方便取用。
 
 ### 4.错误处理
-> 万能的 200。
-> 
+> 万能的 200
+
 如果你知道我在说什么的话，你应该也经历过这样的问题~
 我们看看 Beds24 接口的错误返回码：
 
@@ -226,5 +223,10 @@ Beds24的接口文档可谓是十分原汁原味了，没有主要的 index 引�
 #### Oauth Token
 不同与 Session, Oauth Token（下面简称 token）不需要在共享内存中记录用户状态。token 本身就会包含用户的基本信息、权限范围、有效时间，当然这些都是经过加密的。调用者将 token 放在 http header 中进行请求。一般提供 Oauth 验证方式的接口，都会附加一个类似刷新 refresh token 的接口，用来解决 token 过期的问题。
 
+---
 
+提供一个优质、可用、易读的 API 也是每个接口提供方的责任。记得前段时间Ant Design的彩蛋事件，所引出的“开源即责任”，更何况是收费模式下的接口服务呢？
+文章末尾，作者好心劝告了大家，如果遇到类似Beds24的接口，请远离，除非这个接口提供的服务是不可替代的，因为这样的接口会让你投入更多的理解纠错成本。当然，我们作为开发者，自己也要谨记在设计 API 的时候不要出现上述的一些问题。
 
+### *相关
+[RESTful API Design. Best Practices in a Nutshell.](https://blog.philipphauer.de/restful-api-design-best-practices/)
