@@ -15,8 +15,11 @@ comments: false
 ## api接口请求与返回
 > 参考 [How NOT to design APIs](https://blog.usejournal.com/how-not-to-design-restful-apis-fb4892d9057a) 进行总结
 
-作者的朋友的项目正在使用 [Beds24](http://beds24.com/) 这套系统，这套系统主要就是用来做预定的，连接的是Booking\AirBnB。而这个项目的功能就是从一些订房平台上获取可供预定的房间和日期。
-接口连接[在这里](https://www.beds24.com/api/json/getAvailabilities)。
+作者的朋友的项目正在使用 [Beds24](http://beds24.com/) 这套系统，这套系统主要就是用来做预定的，连接的是Booking\AirBnB上的房源信息。而这个项目的功能就是从一些订房平台上获取可供预定的房间和日期。
+
+但是这个提供的接口服务存在着很多问题，所以作者就拿他作为反面教材愉快地吐槽了一番。
+
+我们先来看一下一个典型的getAvailabilities接口，接口连接[在这里](https://www.beds24.com/api/json/getAvailabilities)。
 我们暂且就称为接口A。接口 A 通过参数获取可用房间和时间，所有可选参数如下所示：
 ```
 {
@@ -98,7 +101,7 @@ comments: false
 }
 ```
 ---
-### 结果结构
+### 3.数据结构
 
 我们用心体会一下这个 response 是干嘛的...
 返回的内容包括了两块：
@@ -159,3 +162,56 @@ comments: false
 }
 ```
 增加了 `properties` 数据块，很明确区分了数据内容，方便取用。
+
+### 4.错误处理
+> 万能的 200。
+> 
+如果你知道我在说什么的话，你应该也经历过这样的问题~
+我们看看 Beds24 接口的错误返回码：
+
+![errorcode](/assets/img/apipro/errorcode.png)
+
+他们定义了一套自己的错误码和错误返回信息。但是这些都是封装在200返回码的 Response 中的。
+
+这里我想说一下，我不太同意原作者的观点，这也是国内和国外的风格差异。
+
+遵循开发效率优先的原则，我认为错误处理的返回应该
+`对外 API，统一返回200，并注明错误在自定义 errorCode 中`。这样的好处是，API对接方可以很容易区分是连接层的问题还是业务层的问题。
+而`内部接口竟可能使用 HttpStatusCode`，前端同学可以更方便获取异常。
+
+### 4.调用须知
+原文中，作者对接口调用方给到的调用建议有些意见，并不涉及太多技术细节，只是提出了接口设计原则，设计要求和思路。
+我们就来简单过一下...
+
+调用须知是接口提供方给到的一些调用意见和规范，我们看下 Beds24的调用须知：
+
+---
+1. Calls should be designed to send and receive only the minimum required data.
+2. Only one API call at a time is allowed, You must wait for the first call to complete before starting the next API call.
+3. Multiple calls should be spaced with a few seconds delay between each call.
+4. API calls should be used sparingly and kept to the minimum required for reasonable business usage.
+5. Excessive usage within a 5 minute period will cause your account to be blocked without warning.
+6. We reserve the right to disable any access we consider to be making excessive use of the API functions at our complete discretion and without warning.
+---
+我们大概分析下，1和4的意见还是挺在理的，尽可能保证请求数据的最小化，合理化。
+
+> 第二条：每次只允许单个 api 的请求，只有当上一个请求结束后才能开始下一个请求。
+
+我觉得应该是文档好久没更新了...在当下并发与并行横行的年代，这样的接口限制有点过时。如果你是在搭建REST API，那记住，这个API是无状态的。这也是 REST API 在云应用中被广泛使用的原因，调用者无需在意是否一次一请求，一旦程序出现问题，或者上一个请求超时、异常，完全可以立即重新请求。要求调用者每次只能请求一次也是一个无理要求。
+
+> 第三条：复合请求每次要排队，每次间隔几秒钟。
+
+几秒钟的限制有点过分了，既然是一个对外提供服务的接口，能够保证提供稳定的高效的接口服务是一种责任。就算有请求频率限制，也应该按照一段时间内的多少次请求限额去过滤。而不是强行要求每次请求的间隔时间，况且还是几秒钟之久。
+
+可能
+
+
+
+
+
+### 5.接口展现
+推荐使用接口展示的工具，[Swagger](https://swagger.io/)或者[Apiary](https://apiary.io/)。
+
+
+
+
