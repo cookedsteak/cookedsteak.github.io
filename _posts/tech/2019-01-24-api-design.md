@@ -185,14 +185,13 @@ comments: false
 
 调用须知是接口提供方给到的一些调用意见和规范，我们看下 Beds24的调用须知：
 
----
 1. Calls should be designed to send and receive only the minimum required data.
 2. Only one API call at a time is allowed, You must wait for the first call to complete before starting the next API call.
 3. Multiple calls should be spaced with a few seconds delay between each call.
 4. API calls should be used sparingly and kept to the minimum required for reasonable business usage.
 5. Excessive usage within a 5 minute period will cause your account to be blocked without warning.
 6. We reserve the right to disable any access we consider to be making excessive use of the API functions at our complete discretion and without warning.
----
+
 我们大概分析下，1和4的意见还是挺在理的，尽可能保证请求数据的最小化，合理化。
 
 > 第二条：每次只允许单个 api 的请求，只有当上一个请求结束后才能开始下一个请求。
@@ -200,13 +199,10 @@ comments: false
 我觉得应该是文档好久没更新了...在当下并发与并行横行的年代，这样的接口限制有点过时。如果你是在搭建REST API，那记住，这个API是无状态的。这也是 REST API 在云应用中被广泛使用的原因，调用者无需在意是否一次一请求，一旦程序出现问题，或者上一个请求超时、异常，完全可以立即重新请求。要求调用者每次只能请求一次也是一个无理要求。
 
 > 第三条：复合请求每次要排队，每次间隔几秒钟。
+> 第五条：五分钟内过高的请求频率会导致账户冻结。
+> 第六条：接口提供方保留冻结接口使用者的账户的权利。
 
-几秒钟的限制有点过分了，既然是一个对外提供服务的接口，能够保证提供稳定的高效的接口服务是一种责任。就算有请求频率限制，也应该按照一段时间内的多少次请求限额去过滤。而不是强行要求每次请求的间隔时间，况且还是几秒钟之久。
-
-可能
-
-
-
+有点霸王条约，而且条件说明不清晰，包括冻结条件，同时在接口请求限制上有点严格。
 
 
 ### 5.接口展现
