@@ -1,12 +1,12 @@
 ---
 layout: post
-title: Golang Interface
+title: Golang Quiz
 category: 技术
 keywords: golang,interface,go,框架,后端
 comments: false
 ---
 
-这里记录些关于 golang interface 的有趣问题
+这里记录些关于 golang 的有趣问题
 
 ## 实现接口的到底是谁
 今天在网上看到一个问题，关于 golang 的 interface 实现的问题。
@@ -42,3 +42,12 @@ Mana结构体是实现了接口 Gulu。
 
 但其实，真正实现这个接口的不是 Mana 而是 *Mana。
 所以，如果我们改成`var a Gulu = &Mana{}`就对了。
+
+## slice：我怕 array 太寂寞
+
+
+
+## 为啥要 make
+我们一直知道，golang 中有些数据类型需要先 make，slice，map，chan。但是有没有想过为什么要 make 呢？
+
+我们循着代码的踪迹找去，发现了 runtime 里的
