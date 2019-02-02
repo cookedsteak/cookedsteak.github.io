@@ -1,6 +1,6 @@
 ---
 layout: post
-title: golang并发安全试验-2
+title: golang并发安全试验-2（持更）
 category: 技术
 keywords: golang,go,并发,channel,routine,context
 comments: true
