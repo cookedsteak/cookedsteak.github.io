@@ -15,3 +15,8 @@ comments: true
 
 ## 样式插件
 这个可以有，有很多封装好的视图模板，组件，能够加快开发速度和程序的美观程度。
+
+## 坑
+#### 原生组件
+原生组件层级最上！这个有点坑哦，意味着很多第三方的 UI 组件遇见原生组件就是“西哈一则”了。
+具体的情况可以点击[【这里】](https://developers.weixin.qq.com/miniprogram/dev/component/native-component.html)
