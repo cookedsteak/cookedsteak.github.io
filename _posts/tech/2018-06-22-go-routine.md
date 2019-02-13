@@ -62,6 +62,7 @@ Go 专门写了个 runtime 去做调度，
 - M需要绑定P才能运行
 - 程序中的多个M并不会同时都处于执行状态，最多只有GOMAXPROCS个M在执行
 
+由于最终还是需要 M 去执行，所以我们需要在强大的 Go routine 和 os 线程中做个中介。
 
 ## Goroutine Pool ?
 golang 对于自己的并发还是相当自信的，你可以看到标准库中各种 go func()，
