@@ -172,6 +172,11 @@ ENTRYPOINT ["/main"]
 ![]()
 
 
+灵活修改配置，所以需要在 k8s 中，采用环节变量的设置。
+
+又会引申出一个问题，在进行容器配置的变更时，怎么切换容器服务呢？
+
+
 ## *参考
 - http://seanlook.com/2014/11/17/dockerfile-introduction/
 - https://medium.com/@pierreprinetti/the-go-1-11-dockerfile-a3218319d191
