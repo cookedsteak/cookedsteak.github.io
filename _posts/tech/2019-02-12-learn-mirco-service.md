@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 玩玩微服务
+title: 玩玩微服务（持更）
 category: 技术
 keywords: golang,k8s,docker,微服务,后端
 comments: false
