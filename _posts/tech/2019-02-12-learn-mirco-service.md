@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 玩玩微服务（持更）
+title: 玩玩微服务1（持更）
 category: 技术
 keywords: golang,k8s,docker,微服务,后端
 comments: false
@@ -15,36 +15,138 @@ comments: false
 ## 准备
 - docker
 - k8s
-- golang
-- grpc
+- golang 1.11+
 
-### 预备概念：
+### 关于 Docker
 大家有时候会把 docker 看做是虚拟机，这个没有问题，但是我想说的是：一个“容器”，实际上是一个由 Linux Namespace、Linux Cgroups 和 rootfs 三种技术构建出来的进程的隔离环境。严格意义上，docker 并不等同于 VM。
 
-在安装 kubernetes 的时候，请使用阿里云的镜像安装。什么？你有 VPN？
-没用的朋友，安装过程中会在 容器中再行进行镜像的拉取，除非你修改安装脚本 设置 http proxy，否则还是会被墙的。
-
-grpc 一般结合 protobuf 更加美味哦。当然 grpc 还是建立在 http 基础上的通讯框架。
-
 ### 关于 kubernetes 
+在安装 kubernetes 的时候，请使用阿里云的镜像安装。什么？你有 VPN？
+没用的朋友，安装过程中会在容器中再行进行镜像的拉取，除非你修改安装脚本设置 http proxy，否则还是会被墙的。
+
 说实话，关于 k8s 的概念完全可以另开一篇文章了。
 但是我尽可能用最少的语言白话一下关键的概念点。
 
 首先你要明白，k8s 最终操作的是 docker。为了让好多好多 docker 管理起来更加方便，也易于伸缩。
-把 k8s 想象成一个大箱子，里面会有分割成不同大小的篮子，有哪几种篮子，颗粒度分别是怎样的呢？
+把 k8s 想象成一个大箱子，里面会有不同大小的篮子，有哪几种篮子，颗粒度分别是怎样的呢？
 
 #### Pod
+对于 k8s 来说，他看得见的最小单位就是 pod。
 
 #### Deployment
+
 
 #### Service
 
 
-## 开始
+## 试验代码
+大家都是Hello World老手了，我们简单过一下:
+目录结构如下
+```
+├── hello
+   ├── Dockerfile
+   └── main.go
+```
 
-一个简单的场景：
-我们有一个机子，在不停发送信息，这个信息发送量和时间没有任何规律可言，有时候一秒钟1条。
-有时候1秒上万条。
-而我们要做的是把这些消息接受，放入 redis 中的队列，然后处理并输出。（非常通用的场景）
-所以我们的架构可能是这样的：
-![]()
+main.go 实现一个简单的 http server
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	http.HandleFunc("/", func(r http.ResponseWriter, r2 *http.Request){
+		r.Write([]byte("Hello World"))
+	})
+
+	fmt.Println("Start listening...")
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+我们还需要 `go mod init` 一下，因为我们没有什么需要依赖的第三方库，所以不会生成 `go.sum`，我们手动创建一个空文件。
+
+## 写Dockerfile
+
+关于 Dockerfile 需要的看[【这里】](http://seanlook.com/2014/11/17/dockerfile-introduction/)。
+
+普通的go程序已经对我们没有吸引力了，我们现在要将他封装成一个 container。
+为了保证 container 的精简，我们最后肯定是只在原始镜像中放一个可执行文件，以及运行该程序的最小配置环境。
+可别动不动就用上百 MB 的全镜像做基镜像啊，除非你家开硬盘厂的（捂脸）。
+
+感谢[Pierre Prinetti](https://medium.com/@pierreprinetti)的文章，给我们展示了一个完整的基础镜像的构建过程。
+来上代码：
+```
+# 第一阶段的 image ===========
+# 设定 Go 的版本
+ARG GO_VERSION=1.11
+
+# 创建一个可执行镜像，基础为 alpine, alpine自带包管理
+# 并明命名为 builder
+FROM golang:${GO_VERSION}-alpine AS builder
+
+# 创建一个没有特权的用户和用户组，这个很重要
+# 否则程序会没有权限执行
+
+RUN mkdir /user && \
+    echo 'nobody:x:65534:65534:nobody:/:' > /user/passwd && \
+    echo 'nobody:x:65534:' > /user/group
+
+# 通过 alpine 的包管理工具 apk
+# 添加 ca-certificates 工具，用来做 https 通讯的, 以及 git
+RUN apk add --no-cache ca-certificates git
+
+# 设置 go 的命令行环境参数
+# CGO_ENABLE=0 使用静态连接的编译
+# GOFLAGS=-mod=vendor 强制在 vendor 文件夹中寻找依赖
+# ENV CGO_ENABLE=0 GOFLAGS=-mod=vendor
+
+# 设定接下来的 RUN 的执行目录
+WORKDIR /src
+
+# 先获取需要的依赖，可以加速之后的构建速度
+COPY ./go.mod ./go.sum ./
+RUN go mod download
+
+# 复制代码哟
+COPY ./ ./
+
+# 静态连接方式编译程序
+RUN CGO_ENABLED=0 go build \
+    -installsuffix 'static' \
+    -o /main .
+
+# 第二阶段的 image ===========
+# scratch 比 alpine 更轻
+FROM scratch AS final
+
+# 从第一个 image 导入用户和组设置
+COPY --from=builder /user/group /user/passwd /etc/
+
+# 将证书文件也拷贝过来
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+# 直接将可执行文件也拷贝过来
+COPY --from=builder /main /main
+
+# 暴露我们需要的 8080 端口
+EXPOSE 8080
+
+# 以 nobody 的名义执行下面的指令
+USER nobody:nobody
+
+# main 走起
+ENTRYPOINT ["/main"]
+```
+准备好了 Dockerfile 后，我们需要 build 一下
+> go build -t hello-go .
+我们将最终的镜像取名为 `hello-go`
+等待 go build 全部完成，我们使用`docker images`命令查看，会发现多了两个镜像，一个是没有
+
+## *参考
+- http://seanlook.com/2014/11/17/dockerfile-introduction/
+- https://medium.com/@pierreprinetti/the-go-1-11-dockerfile-a3218319d191
+- 
