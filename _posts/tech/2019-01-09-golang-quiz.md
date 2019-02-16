@@ -54,6 +54,11 @@ slice 是一个十分方便的数据结构。我一直认为 slice 是 array 的
 我们循着代码的踪迹找去，发现了 runtime 里的
 
 
+## defer & panic & recover
+defer 永远是 FILO 模型，不论 defer 里面是不是有 revocer。
+而 recover 必须配合 defer 才能获取。
+panic 后的同作用域的函数都不会被运行。
+
 ## 线程安全
 不要被这四个字吓到了，其实就是公用资源的锁问题。
 线程安全这个词中，线程限定了范围，给出了程序运行环境：说明是一个程序里的不同函数。
