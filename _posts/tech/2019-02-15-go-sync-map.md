@@ -181,4 +181,53 @@ func (b *Ban) IsIn(user string) bool {
 其实 sync.Map 也已经考虑到了这种情况，所以他会有一个 `LoadOrStore` 的原子方法--
 如果 Load 不出，就直接 Store，如果 Load 出来，那啥也不做。
 
+所以我们小改一下 IsIn 的代码：
+```go
+func (b *Ban) IsIn(user string) bool {
+	...
+	v, ok := b.M.LoadOrStore(user, time.Now())
+	if !ok {
+		fmt.Printf("名单里没有 %s，可以访问\n", user)
+        // 删除b.M.Store(ip, time.Now())
+		return false
+	}
+	...
+}
+```
+然后我们再运行一下，运行几次。
+发觉不会再出现 此次访问量大于 10 的情况了。
 
+## 深究一下
+到此为止，这个场景下的代码实现我们算是成功了。
+但是真正限制用户访问的场景需求可不能这么玩，一般还是配合内存数据库去实现。
+
+如果你只想了解 sync.Map 的应用，那就到这里为止了。
+然而好奇心驱使我看看 sync.Map 的实现。
+
+## 并发读写 map 的历史
+
+如果我们直接用并发去读写一个一般的 map 会怎么样？
+```
+
+```
+
+我们进入 sync.Map 的定义，map.go。
+```
+type Map struct {
+    ...
+}
+
+type readOnly struct {
+    ...
+}
+
+type entry struct {
+    ...
+}
+```
+
+Sync.Map 的功能实现，大部分还是依靠了 atomic 
+
+
+## 参考
+- https://www.jianshu.com/p/aa0d4808cbb8

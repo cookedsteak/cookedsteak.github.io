@@ -9,7 +9,9 @@ toc: true
 自己要 mark 的，觉得有价值的资源列表，貌似会很长很长，分类方法参照[《中国图书馆图书分类法》](https://baike.baidu.com/item/%E4%B8%AD%E5%9B%BD%E5%9B%BE%E4%B9%A6%E9%A6%86%E5%9B%BE%E4%B9%A6%E5%88%86%E7%B1%BB%E6%B3%95/1919634?fromtitle=%E3%80%8A%E4%B8%AD%E5%9B%BD%E5%9B%BE%E4%B9%A6%E9%A6%86%E5%9B%BE%E4%B9%A6%E5%88%86%E7%B1%BB%E6%B3%95%E3%80%8B&fromid=5697985)
 
 ## C 社会科学总论
-- 周雪光老师的主页-https://web.stanford.edu/~xgzhou/zhou_home_Chinese.html
+- 周雪光老师的主页 https://web.stanford.edu/~xgzhou/zhou_home_Chinese.html
 
 ## T 工业技术
-- 比较不错的 tensorflow 教程-https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/
+- 比较不错的 tensorflow 教程 https://morvanzhou.github.io/tutorials/machine-learning/tensorflow/
+- 模拟信号与数字信号转换 https://www.bilibili.com/video/av23733287/?spm_id_from=333.788.videocard.18
+- 三极管 https://www.youtube.com/watch?v=AkFi90lZmXA&t=16s&list=PL45DD1CA57AA3122A&index=22
