@@ -43,6 +43,28 @@ Mana结构体是实现了接口 Gulu。
 但其实，真正实现这个接口的不是 Mana 而是 *Mana。
 所以，如果我们改成`var a Gulu = &Mana{}`就对了。
 
+## 反射拿啥？
+啥事反射？语言对自己行为的描述和监控。
+GRPC 就是通过反射实现的。
+golang 的反射实现需要的一个前提是在做变量声明与创建的时候，有一个 pair 的概念。他记录了变量的值以及值类型。
+具体代码在 runtime>runtime2.go 中的 `itab` 结构体。
+```go
+type itab struct {
+	inter *interfacetype
+	_type *_type
+	hash  uint32 // copy of _type.hash. Used for type switches.
+	_     [4]byte
+	fun   [1]uintptr // variable sized. fun[0]==0 means _type does not implement inter.
+}
+```
+反射的几个基本操作。
+`reflect.ValueOf(T)` 获取反射值 - 比如这个值是1<br/>
+`reflect.TypeOf(T)` 获取反射值类型 - 比如这个类型是 int<br/>
+`reflect.TypeOf(T).NumField()` 获取反射值（结构体）的属性个数<br/>
+`reflect.TypeOf(T).NumMethod()` 获取反射值（结构体）的方法个数<br/>
+`reflect.TypeOf(T).Field(I)` 直接通过 index 索引去获取属性<br/>
+`reflect.TypeOf(T).Method(I)` 直接通过 index 索引去获取方法<br/>
+
 ## slice：我怕 array 太寂寞
 slice 是一个十分方便的数据结构。我一直认为 slice 是 array 的升级版本。
 的确是这样，slice 中传递的不再是真正的值，他给 array 套了一层扩展骨架，同时变成了引用传递的方式进行骨架的操作。
@@ -99,4 +121,51 @@ var ch = make(chan int, 1) // 有缓冲
 
 - G-P-M
 
-- 
+
+## 调试
+
+### 性能分析
+调用包：
+```go
+runtime/pprof
+runtime/trace
+net/http/pprof
+```
+一个 go 程序，用于性能分析指标的概要文件(profiles)有三种：
+1. CPU profile
+2. Men profile 内存概要
+3. Block profile 阻塞概要
+
+注意，概要文件里的信息都是二进制的，需要用go tool pprof查看。
+这个二进制流信息，正是通过 protobuf （protocal buffer 数据序列化协议）生成的。
+
+如果我们要开始采样的话，我们需要使用`StartCPUProfile`函数。参数是一个 io.Writer。
+结束的话使用 `StopCPUProfile`，下面是一个使用例子：
+```go
+func main() {
+    // 打开文件，准备写入
+    filename := "cpuprofile2.out"
+    f, err := os.Create(filename)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Create File Error: %v", err)
+        return
+    }
+    defer f.Close()
+
+    // 进行采样
+    if err := pprof.StartCPUProfile(f); err != nil {
+        fmt.Fprintf(os.Stderr, "CPU profile start error: %v\n", err)
+        return
+    }
+    /* 这里写需要测试的代码
+    */
+    // 停止采样
+    pprof.StopCPUProfile()
+}
+```
+
+
+
+## *参考
+- https://juejin.im/post/5a75a4fb5188257a82110544
+- http://blog.51cto.com/steed/2349944
