@@ -104,7 +104,6 @@ create index union_index on tableName(user,phone,name);
 
 所以我们可以发现，单列索引只会使用查询条件里的第一个查询字段的索引。
 
-
 ## 参考
 - https://www.percona.com/blog/2016/10/11/mysql-8-0-end-myisam/
 - https://dev.mysql.com/doc/refman/8.0/en/innodb-index-types.html
