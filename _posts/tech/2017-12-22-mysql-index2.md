@@ -29,6 +29,8 @@ mysql 数据库中的存储引擎分为 myISAM InnoDB。
 
 #### MyISAM
 用的大名鼎鼎的 b-tree 改进版本，b+tree。
+b+tree 改进在哪里呢？
+
 MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记录的地址。
 ![myisam](/assets/img/trees/myisam.png)
 我觉得MyISAM 的优势已经渐行渐远，所以不打算展开讲 MyISAM 的索引结构。
@@ -46,7 +48,7 @@ MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记�
 #### 聚簇索引
 区区一个多出来的字段，这玩意怎么能加速的查询呢？
 
-让我们再下沉一下，看一下 mysql 存储数据的结构（不是索引结构）。
+让我们先下沉一下，看一下 mysql 存储数据的结构（不是索引结构）。
 我们在官方文档找到了这个-[File Space Management 文件空间管理](https://dev.mysql.com/doc/refman/8.0/en/innodb-file-space.html)。
 
 我们所看到的表啊，其实是一个逻辑显示，每个表空间是由·页·（pages）组成的，每个页默认16kb（这个数字是可变的，只要你在编译的时候改就行了，但是范围在8KB to 64KB之间，还能设置参数 innodb_page_size），
@@ -61,6 +63,46 @@ MyISAM索引文件和数据文件是分离的，索引文件仅保存数据记�
 ![innodb](/assets/img/trees/innodb.png)
 可以看到叶子节点存放了完整的数据记录，这种索引是聚簇索引。
 
+
+#### 二级索引
+
+
+## 联合索引
+联合索引就是几个字段加起来的索引类型。
+比如一个表中有如下字段：
+```
+user  phone  name  birth  height
+```
+我们对 `userid` `phone` `name` 做联合索引：
+```sql
+create index union_index on tableName(user,phone,name);
+```
+好，那接下来我们的测试就来了，我们想要看看哪些查询对于联合索引是有效的。
+使用 explain 查询。
+
+#### 普通查询
+- 根据 userid 查询，联合索引被使用
+- 根据 phone 查询，联合索引无效
+- 根据 name 查询，联合索引无效
+
+- 根据 userid and phone 查询，联合索引有效
+- 根据 userid or phone 查询，联合索引无效
+- 根据 phone and name 查询，联合索引无效
+- 根据 userid and name 查询，联合索引有效
+- 根据 userid and phone and name 查询，联合索引有效
+
+所以你会发现，真正能够使用到联合索引的符合查询，还是看联合索引的第一个字段在不在查询条件里。
+
+## 单列索引
+
+还是用上面的例子，只不过我们把联合索引改为了单列索引：
+`userid`,`phone`,`name`
+
+- 根据 userid and name and phone 查询，只用到了第一个 userid
+- 根据 name and phone 查询，只用到了那么
+- 根据 userid or name 查询，发现两个都用到了
+
+所以我们可以发现，单列索引只会使用查询条件里的第一个查询字段的索引。
 
 
 ## 参考

@@ -6,7 +6,8 @@ keywords: golang,interface,go,框架,后端
 comments: false
 ---
 
-这里记录些关于 golang 的有趣问题
+这里记录些关于 golang 的问题。
+有些很基础，有些很有趣。总之，是作为 gopher 都应该掌握的知识。
 
 ## 实现接口的到底是谁
 今天在网上看到一个问题，关于 golang 的 interface 实现的问题。
@@ -42,6 +43,9 @@ Mana结构体是实现了接口 Gulu。
 
 但其实，真正实现这个接口的不是 Mana 而是 *Mana。
 所以，如果我们改成`var a Gulu = &Mana{}`就对了。
+
+那如果我们以 `(m Mana)Goo` 以去实现 Goo这个方法，`*Mana` 是不是也实现了 Goo 这个方法呢？
+答案是 `Yep`。 （面试血的教训）
 
 ## 反射拿啥？
 啥事反射？语言对自己行为的描述和监控。
