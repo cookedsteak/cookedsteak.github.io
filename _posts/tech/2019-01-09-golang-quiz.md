@@ -69,6 +69,44 @@ type itab struct {
 `reflect.TypeOf(T).Field(I)` 直接通过 index 索引去获取属性<br/>
 `reflect.TypeOf(T).Method(I)` 直接通过 index 索引去获取方法<br/>
 
+## golang 运行位置
+
+我们可以通过 `runtime.Caller` 来获取当前运行的文件目录。
+要注意的是 runtime.Caller 中有一个int参数，注解是这样的：
+> The argument skip is the number of stack frames
+ to ascend, with 0 identifying the caller of Caller.
+
+意思就是你要追溯的堆栈的级数。
+
+返回的数据分别是：
+> The return values report the
+ program counter, file name, and line number within the file of the corresponding
+ call. The boolean ok is false if it was not possible to recover the information.
+
+程序计数器，文件名，文件对应的行号，以及是否拿到了运行堆信息。
+
+举个例子，最简单的如下代码：
+```
+func main() {
+	fmt.Println(runtime.Caller(2))
+}
+```
+我们改变参数
+- 参数为 0
+返回 17371019 /my/file/path/main.go 18 true
+- 参数为 1
+返回了 16943046 /usr/local/go/src/runtime/proc.go 201 true
+- 参数为 2
+返回了 17107488 /usr/local/go/src/runtime/asm_amd64.s 1333 true
+
+当我们拿到了自己所要的层级路径后，可以使用 filepath 包去处理。
+常用的该包的方法有：
+- `filepath.Rel(a, b)` b 相较于 a 的相对路径
+- `filepath.Join(a, b)` a 与 b 组成新的路径
+- `filepath.Clean(a, b)` 清理路径中的多余字符
+- `filepath.Abs(a)` a 的绝对路径
+- `filepath.Match(a, b)` 按照 a 的正则比较 b 路径
+
 ## slice：我怕 array 太寂寞
 slice 是一个十分方便的数据结构。我一直认为 slice 是 array 的升级版本。
 的确是这样，slice 中传递的不再是真正的值，他给 array 套了一层扩展骨架，同时变成了引用传递的方式进行骨架的操作。
