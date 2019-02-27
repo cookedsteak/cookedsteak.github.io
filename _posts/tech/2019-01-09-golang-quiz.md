@@ -9,6 +9,8 @@ comments: false
 这里记录些关于 golang 的问题。
 有些很基础，有些很有趣。总之，是作为 gopher 都应该掌握的知识。
 
+---
+
 ## 实现接口的到底是谁
 今天在网上看到一个问题，关于 golang 的 interface 实现的问题。
 
@@ -47,6 +49,8 @@ Mana结构体是实现了接口 Gulu。
 那如果我们以 `(m Mana)Goo` 以去实现 Goo这个方法，`*Mana` 是不是也实现了 Goo 这个方法呢？
 答案是 `Yep`。 （面试血的教训）
 
+---
+
 ## 反射拿啥？
 啥事反射？语言对自己行为的描述和监控。
 GRPC 就是通过反射实现的。
@@ -68,6 +72,8 @@ type itab struct {
 `reflect.TypeOf(T).NumMethod()` 获取反射值（结构体）的方法个数<br/>
 `reflect.TypeOf(T).Field(I)` 直接通过 index 索引去获取属性<br/>
 `reflect.TypeOf(T).Method(I)` 直接通过 index 索引去获取方法<br/>
+
+---
 
 ## golang 运行位置
 
@@ -107,21 +113,27 @@ func main() {
 - `filepath.Abs(a)` a 的绝对路径
 - `filepath.Match(a, b)` 按照 a 的正则比较 b 路径
 
+---
+
 ## slice：我怕 array 太寂寞
 slice 是一个十分方便的数据结构。我一直认为 slice 是 array 的升级版本。
 的确是这样，slice 中传递的不再是真正的值，他给 array 套了一层扩展骨架，同时变成了引用传递的方式进行骨架的操作。
 
+---
 
 ## 为啥要 make
 我们一直知道，golang 中有些数据类型需要先 make，slice，map，chan。但是有没有想过为什么要 make 呢？
 
 我们循着代码的踪迹找去，发现了 runtime 里的
 
+---
 
 ## defer & panic & recover
 defer 永远是 FILO 模型，不论 defer 里面是不是有 revocer。
 而 recover 必须配合 defer 才能获取。
 panic 后的同作用域的函数都不会被运行。
+
+---
 
 ## 线程安全
 不要被这四个字吓到了，其实就是公用资源的锁问题。
@@ -155,6 +167,7 @@ channel关闭后，仍然可以从中读取以发送的数据，读取完数据�
 
 ### context
 
+---
 
 ## 并发模型
 并发模型有哪些？需要先知道在并发模型里都有哪些角色。
@@ -174,8 +187,9 @@ channel关闭后，仍然可以从中读取以发送的数据，读取完数据�
 
 - G-P-M
 
+---
 
-## 调试
+## 我爱调试
 
 ### 性能分析
 调用包：
@@ -216,6 +230,42 @@ func main() {
     pprof.StopCPUProfile()
 }
 ```
+
+---
+
+## iota
+有了 iota，在声明常量的时候真的会很方便，
+不过你搞得起 iota 各种骚气的写法吗？
+比如：
+```go
+const(
+    a = iota
+    b
+    -
+    c = iota
+)
+```
+iota 是从0开始的，所以 a=0，然后会依次递增，b=1，-说明占位，他会让 iota 加1，但是不会赋值给任何常量。
+如果你这时候重新 iota 一把，iota 的值会从上一个最后一次赋值开始，所以 c=1。
+
+再有：
+```go
+const (
+    Apple, Banana = iota + 1, iota + 2
+    Cherimoya, Durian
+    Elderberry, Fig
+)
+```
+猜猜看，各会是什么？
+```
+// Apple: 1
+// Banana: 2
+// Cherimoya: 2
+// Durian: 3
+// Elderberry: 3
+// Fig: 4
+```
+iota 他还是根据行来增加的。
 
 
 ## *参考
