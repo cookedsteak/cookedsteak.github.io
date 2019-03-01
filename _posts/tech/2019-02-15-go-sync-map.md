@@ -204,6 +204,46 @@ func (b *Ban) IsIn(user string) bool {
 如果你只想了解 sync.Map 的应用，那就到这里为止了。
 然而好奇心驱使我看看 sync.Map 的实现。
 
+## map 与 hash table
+好吧，sync.Map 毕竟还是儿子，我们看爸爸是什么原理。
+爸爸是map，map 是怎么实现的呢？
+这个又需要了解下 hash table，go map 的底层实现其实是基于 hash table 的。
+hash table 作为一种散列式的存储结构，有着好几种算法。
+
+### hash table
+array[a,b,c,d,e]
+这样一个数组，如果要找 c，一种简单的方法是 o(n) 顺序搜索。
+但是如果我们知道 c 的下标（index）是不是就会很快了，比如 array(2) = c。
+
+虽然对于我们来说，a,b,c,d,e 是顺序的，但其实他的存储方式在计算机中是散列的，松散的。
+我们使用一种 Mod 的计算方式，计算出他们的下标。
+
+> address = key Mod n
+
+其中，Mod 是取余运算，n 是数组的长度，key 就是我们要存的内容。
+我们一般先把 key 转换为 ASIIC 码，在做运算。
+
+### collisions (key碰撞)
+如果遇到 key 的碰撞怎么办？
+我们看下下面的算法。
+collisions 有两种大解决方案：
+1. Open addressing
+2. Closed addressing
+
+#### Linear Probing 算法
+不同 key mod 出相同索引，就顺推直到索引位置为空。
+
+- Load Factor 加载因子 = 总存储元素 / array 长度
+
+#### Quadratic Probing
+
+#### Chaining 算法
+
+
+
+但是取余运算也会有算出来不是唯一的时候。
+
+
 ## 并发读写 map 的历史
 
 如果我们直接用并发去读写一个一般的 map 会怎么样？

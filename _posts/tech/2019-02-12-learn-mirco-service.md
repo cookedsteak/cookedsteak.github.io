@@ -101,11 +101,6 @@ RUN mkdir /user && \
 # 添加 ca-certificates 工具，用来做 https 通讯的, 以及 git
 RUN apk add --no-cache ca-certificates git
 
-# 设置 go 的命令行环境参数
-# CGO_ENABLE=0 使用静态连接的编译
-# GOFLAGS=-mod=vendor 强制在 vendor 文件夹中寻找依赖
-# ENV CGO_ENABLE=0 GOFLAGS=-mod=vendor
-
 # 设定接下来的 RUN 的执行目录
 WORKDIR /src
 
@@ -123,6 +118,7 @@ RUN CGO_ENABLED=0 go build \
 
 # 第二阶段的 image ===========
 # scratch 比 alpine 更轻
+# 第二阶段一般不支持 用 RUN，因为镜像很小没有需要的一些命令
 FROM scratch AS final
 
 # 从第一个 image 导入用户和组设置
@@ -145,6 +141,7 @@ ENTRYPOINT ["/main"]
 ```
 准备好了 Dockerfile 后，我们需要 build 一下
 > go build -t hello-go .
+千万不要忘记了 最后的 `.`。
 
 我们将最终的镜像取名为 `hello-go`
 完后发现整个过程没有报异常并且 build 成功。
@@ -177,6 +174,17 @@ ENTRYPOINT ["/main"]
 
 我选择了后者，因为更灵活。
 假设我们的 redis 服务运行在宿主机上，那么我们需要容器活期宿主机的地址，可以用这个变量 `-e xxx=host.docker.internal`
+
+同时，我们的开发机，打包机，和生产机是要做完全区分的。
+而一般的开发发布流程应该是：
+1. 开发机提交代码到 git 仓库
+2. 触发打包机 pull 代码并进行 在线的 build
+3. 打包机生成镜像并 push 到私有的 docker 仓库
+4. 生产机 pull 最新的镜像并 run 一个容器
+
+其中，私有的 docker 仓库可以使用阿里云，免费的。
+再发布的时候我们是需要打 tag的，docker tag 的作用就是区分镜像的版本。
+
 
 ## *参考
 - http://seanlook.com/2014/11/17/dockerfile-introduction/
