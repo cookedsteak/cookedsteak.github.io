@@ -201,58 +201,68 @@ func (b *Ban) IsIn(user string) bool {
 到此为止，这个场景下的代码实现我们算是成功了。
 但是真正限制用户访问的场景需求可不能这么玩，一般还是配合内存数据库去实现。
 
-如果你只想了解 sync.Map 的应用，那就到这里为止了。
-然而好奇心驱使我看看 sync.Map 的实现。
+那么，如果你只想了解 sync.Map 的应用，就到这里为止了。
+然而好奇心驱使我看看 sync.Map 的实现，我们继续吧。
 
-## map 与 hash table
-好吧，sync.Map 毕竟还是儿子，我们看爸爸是什么原理。
-爸爸是map，map 是怎么实现的呢？
-这个又需要了解下 hash table，go map 的底层实现其实是基于 hash table 的。
-hash table 作为一种散列式的存储结构，有着好几种算法。
+## 知道 hash table 吗？
 
-### hash table
-array[a,b,c,d,e]
-这样一个数组，如果要找 c，一种简单的方法是 o(n) 顺序搜索。
-但是如果我们知道 c 的下标（index）是不是就会很快了，比如 array(2) = c。
+好吧，我承认你需要先了解什么是 map，什么是 hash table。
+你可以看一下我的另一篇文章，Hash Table。
+同时，还希望你能区别一下 哈希表（hash table），字典（可以看做 map），二维数组的区别，可以看[【这里】](https://www.zhihu.com/question/266414962)
 
-如果我们一一对应，万一来一个 z, 是不是中间会有很多中空的位置被浪费了。
-（index 只能是依次递增的）
+## 就是要并发读写 map
+行行行， 你是不到黄河心不死。
+那就硬是要并发读写 map 会怎么样。
 
-虽然对于我们来说，a,b,c,d,e 是顺序的，但其实他的存储方式在计算机中是散列的，松散的。而我们要尽可能让其平均分布于有限的数组空间内，所以就有了散列函数（散列算法）
-我们使用一种 Mod 的计算方式，计算出他们的下标。
+先来个主角 A
+```go
+type A map[string]int
+```
+我们定义成了自己一个类型 A，他骨子里还是 map。
 
-> address = key Mod n
+```go
+type A map[string]int
 
-其中，Mod 是取余运算，n 是数组的长度，key 就是我们要存的内容。
-我们一般先把 key 转换为 ASIIC 码，在做运算。
+func main() {
+	// 初始化一个 A
+	m := make(A)
+	m["one"] = 1
+	m["two"] = 3
 
-### collisions (key碰撞)
-如果遇到 key 的碰撞怎么办？
-我们看下下面的算法。
-collisions 有两种大解决方案：
-1. Open addressing
-2. Closed addressing
+	// 读取 one
+	go m.ReadMap("one")
+	// 设置 two 值为 2
+	go m.SetMap("two", 2)
 
-#### Linear Probing 算法
-不同 key mod 出相同索引，就顺推直到索引位置为空。
+	time.Sleep(3*time.Second)
+}
 
-- Load Factor 加载因子 = 总存储元素 / array 长度
+// A 有个读取某个 Key 的方法
+func (a A)ReadMap(key string) {
+	fmt.Printf("Get Key %s: %d",key, a[key])
+}
+// A 有个设置某个 Key 的方法
+func (a A)SetMap(key string, value int) {
+	a[key] = value
+	fmt.Printf("Set Key %s: %d",key, a[key])
+}
+```
+诶，看上去不错，我们给 map A 类型定义了 get， set 方法，如果 golang 不允许并发读写 map 的话，应该会报错吧，我们跑一下。
 
-#### Quadratic Probing
-
-#### Chaining 算法
-
-
-
-但是取余运算也会有算出来不是唯一的时候。
-
-
-## 并发读写 map 的历史
-
-如果我们直接用并发去读写一个一般的 map 会怎么样？
+```bash
+> Get Key one: 1
+> Set Key two: 2
+```
+喵喵喵???
+为什么正常输出了？
+说好的并发读写报错呢？
+好吧，其实原因是上面的 map 读写，虽然我们设置了协程，但是对于计算机来说还是有时间差的。只要一个微小的先后，就不会造成 map 数据的读写异常，所以我们改一下。
+```go
+func main() {
+	
+}
 ```
 
-```
 
 我们进入 sync.Map 的定义，map.go。
 ```
@@ -274,3 +284,5 @@ Sync.Map 的功能实现，大部分还是依靠了 atomic
 
 ## 参考
 - https://www.jianshu.com/p/aa0d4808cbb8
+- https://www.zhihu.com/question/266414962
+- https://juejin.im/post/5ae01447f265da0ba062d2e8
