@@ -210,9 +210,8 @@ func (b *Ban) IsIn(user string) bool {
 你可以看一下我的另一篇文章，Hash Table。
 同时，还希望你能区别一下 哈希表（hash table），字典（可以看做 map），二维数组的区别，可以看[【这里】](https://www.zhihu.com/question/266414962)
 
-## 就是要并发读写 map
-行行行， 你是不到黄河心不死。
-那就硬是要并发读写 map 会怎么样。
+## 制造问题
+如果硬是要并发读写 map 会怎么样。
 
 先来个主角 A
 ```go
@@ -234,7 +233,7 @@ func main() {
 	// 设置 two 值为 2
 	go m.SetMap("two", 2)
 
-	time.Sleep(3*time.Second)
+	time.Sleep(1*time.Second)
 }
 
 // A 有个读取某个 Key 的方法
@@ -259,9 +258,42 @@ func (a A)SetMap(key string, value int) {
 好吧，其实原因是上面的 map 读写，虽然我们设置了协程，但是对于计算机来说还是有时间差的。只要一个微小的先后，就不会造成 map 数据的读写异常，所以我们改一下。
 ```go
 func main() {
-	
+	m := make(A)
+	m["one"] = 1
+	m["two"] = 3
+
+	go func() {
+		for {
+			m.ReadMap("one")
+		}
+	}()
+
+	go func(){
+		for {
+			m.SetMap("two", 2)
+		}
+	}()
+
+	time.Sleep(1*time.Second)
 }
 ```
+为了让读写能够尽可能碰撞，我们增加了循环。
+现在我们可以看到了：
+```
+> fatal error: concurrent map read and map write
+```
+
+## 解决问题
+我们证实了 map 并发读写的问题，现在我们尝试来解决。
+
+#### 思路
+既然是读写造成的冲突，那我们首先考虑的便是读写分离
+我们让 一个 map 变成两个。
+`read map` 用作读取
+`dirty map` 用作写入，因为一直会变嘛，所以我们叫他脏数组
+
+
+
 
 
 我们进入 sync.Map 的定义，map.go。
