@@ -294,8 +294,6 @@ func main() {
 
 
 
-
-
 我们进入 sync.Map 的定义，map.go。
 ```
 type Map struct {

@@ -22,7 +22,7 @@ I am also a [DAOONER](http://www.daoone.org).
 - Go
 - Python
 - PHP
-- Javascript/TypeScript
+- TypeScript
 - SQL
 - CSS
 - C++
