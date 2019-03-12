@@ -63,7 +63,22 @@ toc: true
 多个应用按照一定的格式生成文件日志，filebeat 不停采集，输出给 es。
 
 但是注意，filebeat 的实时性我试下来不高。
-所以不如应用直推 elasticsearch
+所以如果对实时性有要求的可以程序直推 elasticsearch。
+
+这里举一个我自己的例子：
+监控端选择 efk，以 json 形式 RawLog 到文件，然后 filebeat 监听文件并推送至 elasticsearch。
+注意 filebeat 不会做存量更新。
+同时需要做 filebeat json 设置
+```
+  paths:
+    # - /var/log/*.log
+    - /Users/steak/Projects/go/src/bitbucket.org/gym3/mreceiver/logs/receive_log_*.log
+    #- c:\programdata\elasticsearch\logs\*
+
+  json.keys_under_root: true
+  json.overwrite_keys: true
+```
+
 
 ### 稍微复杂的场景
 随着日志的量级不断上升，es可能会有一些处理瓶颈。
