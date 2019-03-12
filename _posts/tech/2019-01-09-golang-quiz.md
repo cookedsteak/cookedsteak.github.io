@@ -115,6 +115,12 @@ func main() {
 
 ---
 
+## 什么是 runtime ?
+一直听说 runtime,runtime，那 runtime 到底是什么呢？
+知乎上也有相关的问题，可以看下[到底什么是 runtime](https://www.zhihu.com/question/20607178)。
+
+
+
 ## slice：我怕 array 太寂寞
 slice 是一个十分方便的数据结构。我一直认为 slice 是 array 的升级版本。
 的确是这样，slice 中传递的不再是真正的值，他给 array 套了一层扩展骨架，同时变成了引用传递的方式进行骨架的操作。
