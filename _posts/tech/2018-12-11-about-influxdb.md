@@ -156,7 +156,11 @@ if len(res) > 0 && len(res[0].Series) > 0 {...}
 只要我们有了时间维度和数据维度的两个值，什么图标插件，尽管来。不过我看很多运维会使用到 Grafana 来显示。
 
 ## 问题
-在运行了一段时间程序后，你会发现一个问题，服务器上 influxdb 所监听的 8086端口，很出现很多 TIME_WAIT 状态的连接，尽管我程序中已经主动 close也没有用。我在网上查了下：
+
+在运行了一段时间程序后，你会发现一个问题，服务器上 influxdb 所监听的 8086端口，很出现很多 TIME_WAIT 状态的连接，
+> netstat -nat|grep -i "8086"|wc -l
+
+尽管我程序中已经主动 close也没有用。我在网上查了下：
 [InfluxDB TCP 连接数过多问题](https://www.jianshu.com/p/84015f4ecc1d)
 
 需要知道，主动关闭的一方才是会拥有 TIME_WAIT 状态的一方。
