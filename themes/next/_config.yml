@@ -27,15 +27,15 @@ override: false
 # For example, you put your favicons into `hexo-site/source/images` directory.
 # Then need to rename & redefine they on any other names, otherwise icons from Next will rewrite your custom icons in Hexo.
 favicon:
-  small: /images/favicon-16x16-next.png
-  medium: /images/favicon-32x32-next.png
-  apple_touch_icon: /images/apple-touch-icon-next.png
-  safari_pinned_tab: /images/logo.svg
+  small: https://s.gravatar.com/avatar/487a86efb4faddc1265320b3855b1ba9?s=50
+  medium: https://s.gravatar.com/avatar/487a86efb4faddc1265320b3855b1ba9?s=50
+  apple_touch_icon: https://s.gravatar.com/avatar/487a86efb4faddc1265320b3855b1ba9?s=50
+  safari_pinned_tab: https://s.gravatar.com/avatar/487a86efb4faddc1265320b3855b1ba9?s=50
   #android_manifest: /images/manifest.json
   #ms_browserconfig: /images/browserconfig.xml
 
 # Set default keywords (Use a comma to separate)
-keywords: "Steak, Tech, Golang"
+keywords: "Steak, Tech, Golang, Programming, 技术, 后端, 架构"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -48,7 +48,7 @@ footer:
   since: 2017
 
   # Icon between year and copyright info.
-  icon: user
+  icon:  false
 
   # If not defined, will be used `author` from Hexo main config.
   copyright:
@@ -75,7 +75,7 @@ footer:
 canonical: true
 
 # Change headers hierarchy on site-subtitle (will be main site description) and on all post/pages titles for better SEO-optimization.
-seo: false
+seo: true
 
 # If true, will add site-subtitle to index page, added in main hexo config.
 # subtitle: Subtitle
@@ -92,11 +92,11 @@ index_with_subtitle: false
 # Value before `||` delimeter is the target link.
 # Value after `||` delimeter is the name of FontAwesome icon. If icon (with or without delimeter) is not specified, question icon will be loaded.
 menu:
-  home: / || home
-  about: /about/ || user
+  home: / || false
+  about: /about/ || false
   #tags: /tags/ || tags
-  categories: /categories/ || th
-  archives: /archives/ || archive
+  categories: /categories/ || false
+  archives: /archives/ || false
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
@@ -191,7 +191,7 @@ sidebar:
   #display: remove
 
   # Sidebar offset from top menubar in pixels (only for Pisces | Gemini).
-  offset: 12
+  offset: 0
 
   # Back to top in sidebar (only for Pisces | Gemini).
   b2t: false
@@ -219,8 +219,8 @@ excerpt_description: true
 # Automatically Excerpt. Not recommend.
 # Please use <!-- more --> in the post to control excerpt accurately.
 auto_excerpt:
-  enable: false
-  length: 150
+  enable: true
+  length: 200
 
 # Post meta display settings
 post_meta:
@@ -252,7 +252,7 @@ post_wordcount:
 
 # Declare license on posts
 post_copyright:
-  enable: true
+  enable: false
   license: CC BY-NC-SA 3.0
   license_url: https://creativecommons.org/licenses/by-nc-sa/3.0/
 
@@ -274,7 +274,7 @@ android_chrome_color: "#222"
 #   image: url-of-image   - Images's url
 custom_logo:
   enabled: false
-  image:
+  image: 
 
 # Code Highlight theme
 # Available value:
@@ -364,7 +364,7 @@ baidu_analytics: 17c1440fdae20094ae5a66076765e374
 # Disqus
 disqus:
   enable: true
-  shortname: cookedsteak
+  shortname: steak
   count: true
 
 # Hypercomments
@@ -552,19 +552,19 @@ firestore:
 # Get more information on http://ibruce.info/2015/04/04/busuanzi/
 busuanzi_count:
   # count values only if the other configs are false
-  enable: false
+  enable: true
   # custom uv span for the whole site
   site_uv: true
-  site_uv_header: <i class="fa fa-user"></i>
+  site_uv_header: <i class="fa fa-user"></i> 访客
   site_uv_footer:
   # custom pv span for the whole site
   site_pv: true
-  site_pv_header: <i class="fa fa-eye"></i>
-  site_pv_footer:
+  site_pv_header: <i class="fa fa-eye"></i> 访问量
+  site_pv_footer: 次
   # custom pv span for one page only
   page_pv: true
-  page_pv_header: <i class="fa fa-file-o"></i>
-  page_pv_footer:
+  page_pv_header: <i class="fa fa-file-o"></i> 看过文章
+  page_pv_footer: 次
 
 
 # Tencent analytics ID
@@ -657,7 +657,7 @@ tabs:
 
 # Use velocity to animate everything.
 motion:
-  enable: true
+  enable: false
   async: false
   transition:
     # Transition variants:

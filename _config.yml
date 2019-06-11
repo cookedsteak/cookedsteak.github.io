@@ -3,8 +3,8 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Steak
-subtitle: 0x40
+title: 牛排
+subtitle: To be a Full-stack creator
 description:
 keywords:
 author: Cookedsteak
@@ -78,7 +78,10 @@ theme: next
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
-  repo: git@github.com:cookedsteak/cookedsteak.github.io.git
+# - type: git
+#   repo: git@github.com:cookedsteak/cookedsteak.github.io.git
+#   branch: master
+- type: git
+  repo: git@git.coding.net:cookedsteak/cookedsteak.coding.me.git
   branch: master
 

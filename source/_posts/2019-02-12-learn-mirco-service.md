@@ -1,56 +1,140 @@
 ---
 layout: post
-title: 玩玩微服务1（持更）
+title: 从微服务说起1（持更）
 category: 技术
 keywords: golang,k8s,docker,微服务,后端
 comments: false
 ---
 
-## 忍不住
-一直看人家面试要求 K8s + docker，然而这个经验对于一般的公司来说是十分宝贵的。
-（能有大场景的公司能有几个啊？捂脸）
-但是好奇心还是趋势我去实现一个最最最最简单的 k8s + docker 提供服务的场景。
-所以这篇文章就要从 0 开始搭建这么一套服务。
+## 什么是微服务
 
-## 准备
-- [docker]()
-- [kubernetes]()
-- [golang 1.11+]()
+我觉得老生常谈了，随便 google 一下就能得到很多解答。
+微服务其实也是一种很早以前就提出的架构策略。
 
-准备工作的安装环节，我们只提供教程地址，点击即可。
+在几年前，我接触到的应用都非常小，所以对微服务的概念也不准确。
+我以为，就是把后端的一体化应用拆分就行了，满足单个模块的弹性扩展，持续集成，业务。
+但其实这个是不准确的。微服务应该是更加抽象的应用架构模式。不单单大业务的分割。
 
-### 关于 Docker
-大家有时候会把 docker 看做是虚拟机，这个没有问题，但是我想说的是：一个“容器”，实际上是一个由 Linux Namespace、Linux Cgroups 和 rootfs 三种技术构建出来的进程的隔离环境。严格意义上，docker 并不等同于 VM。
+## 阿里巴巴的微服务中台
 
-### 关于 kubernetes 
-在安装 kubernetes 的时候，请使用阿里云的镜像安装。什么？你有 VPN？
-没用的朋友，安装过程中会在容器中再行进行镜像的拉取，除非你修改安装脚本设置 http proxy，否则还是会被墙的。
+如果微服务在思路上是正确的，那我们是不是可以无脑微服务化呢？
+答案肯定是否定的！
+服务本身就存在这区别，所以微服务在整个系统的架构中，也会有区别。
+比如阿里巴巴的微服务策略是，重中台，轻前台。
 
-说实话，关于 k8s 的概念完全可以另开一篇文章了。
-但是我尽可能用最少的语言白话一下关键的概念点。
+这是什么意思呢？
 
+这里的前台，并不是前端，而是包含了前端的，面向用户的或者接入方的服务（可能包含了前端和后端）。
+中台，其实就是脱离了业务，而是吧业务所涉及的功能抽象成了服务。
+比如用户登录，下单，消息等...依托于阿里巴巴的大生态，这些服务被抽象到中台后，想要开辟一个新的业务场景变得十分简单，就像是搭积木一样。唯一要做的就是填补靠前台的胶水代码。
+
+## 微服务与分布式
+
+由于我是玩 Golang 的，所可能对 go 生态下的微服务架构比较熟悉。
+微服务和分布式有什么关系呢？
+有些人会认为，微服务不就是分布式吗？emmmm...我觉得这是错的。
+
+分布式是一种系统架构，微服务是服务提供形势。
+你可以认为，*分布式是微服务的一种展现形式*。
+
+知乎上有个很经典的总结：
+
+- 微服务：分散能力
+- 分布式：分散压力
+
+这样思考的话其实就很清楚了，两个原本没啥关系，但是这两个在一起能够达到 1+1>2 的效果，所以
+一起出现的情况会很高。
+
+## 关于 Docker
+
+如果说微服务与分布式是一个发展纲领的话，那 CI&CD 就是对纲领的实践。
+既然是实践，我们就需要高效。服务容器化自然而然就被照搬过来了。
+
+大家有时候会把 docker 看做是虚拟机，这个没有问题，但是我想说的是：一个“容器”，实际上是一个由 Linux Namespace（资源隔离）、Linux Cgroups（资源限制） 和 rootfs（基本文件系统） 三种技术构建出来的进程的隔离环境。严格意义上，docker 并不等同于 VM。
+
+## 关于 kubernetes
+
+有了容器，跑不掉容器管理的。外面基本上都用 k8s。
 首先你要明白，k8s 最终操作的是 docker。为了让好多好多 docker 管理起来更加方便，也易于伸缩。
 把 k8s 想象成一个大箱子，里面会有不同大小的篮子，有哪几种篮子，颗粒度分别是怎样的呢？
 
+接下来就沿着 k8s 做一下知识点的记录，我尽可能用最少的语言白话一下关键的概念点：
+
+### 安装
+
+我的安装策略是先安装 k8s 的基础组件：kubelet, kubeadm, kubectl。
+然后通过 kubeadm 去阿里云拉取 k8s 的其他组件。
+
+- kube-apiserver
+- kube-scheduler
+- kube-controller-manager
+- etcd
+
+可惜的 gcr.io 我们访问不了，所以只能曲线救国。
+我们可以在安装完三个二进制组件后，使用
+
+```sh
+kubeadm init  —image-repository registry.aliyuncs.com/google_containers  —pod-network-cidr=10.244.0.0/16 —kubernetes-version v1.14.1 —ignore-preflight-errors=Swap
+```
+
+来从阿里云上的镜像仓库添加 k8s 容器。
+注意后面的 —ignore-preflight-errors=Swap 选项，我们必须关闭 swap，才能顺利安装。
+
+所以在执行上面的 `kubeadm init` 之前，我们还要改一下 k8s 的配置文件。
+
+修改 `/etc/systemd/system/kubelet.service.d/` conf 文件
+
+增加：
+
+```sh
+Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"
+```
+
+然后重启 kubelet
+
+```sh
+systemctl daemon-reload
+systemctl restart kubelet
+```
+
 #### Pod
+
 对于 k8s 来说，他看得见的最小单位就是 pod。
+一个 pod 里可以放一个单独的容器，也可以放多个进程资源共享的容器。
+总之，应该是提供服务的最小单位。
 
-#### Deployment
+有了 pod 后，我们就可以通过水平扩展 pod，来增加服务性能输出。
+那我怎么水平扩展？这个就是 Devlopment 的作用。
 
+我扩展了以后怎么做 pod 的负载均衡，以及统一的外部 url 地址？
+这个就是 Service 的作用。
 
 #### Service
 
+被打上标签的 pods，是 service 区分的依据。
+一个 Service，启动获的外网地址后，便可以对外开始服务。
+所以我们要将 pods 再抽象一层成为服务。
+
+#### Deployment
+
+Deployment资源可以自动迁移应用程序版本，实现零停机，并且可以在失败时快速回滚到前一版本
+你可以看做是一个带有版本管理控制分发的 Service。
 
 ## 试验代码
+
+在对 k8s 有了初步的概念后，就要用普通的代码试验一下了。
+
 大家都是Hello World老手了，我们简单过一下:
 目录结构如下
-```
+
+```sh
 ├── hello
    ├── Dockerfile
    └── main.go
 ```
 
 main.go 实现一个简单的 http server
+
 ```go
 package main
 
@@ -165,10 +249,8 @@ ENTRYPOINT ["/main"]
 > 除了输出内容外，我们还需要将接受到的数据存入到 Redis 队列中。
 既然我们做成了容器，那就是为了能够更好的伸缩，所以我们的这个新应用会多个容器同时运行。
 
-如下图：
-![]()
-
 所以问题就聚焦在了如何灵活使用配置。这里有两个方案：
+
 1. 设置在 Dockerfile 中，添加 ENV xxx xxx
 2. 在容器运行的时候，添加 -e 参数
 
@@ -177,6 +259,7 @@ ENTRYPOINT ["/main"]
 
 同时，我们的开发机，打包机，和生产机是要做完全区分的。
 而一般的开发发布流程应该是：
+
 1. 开发机提交代码到 git 仓库
 2. 触发打包机 pull 代码并进行 在线的 build
 3. 打包机生成镜像并 push 到私有的 docker 仓库
@@ -185,8 +268,8 @@ ENTRYPOINT ["/main"]
 其中，私有的 docker 仓库可以使用阿里云，免费的。
 再发布的时候我们是需要打 tag的，docker tag 的作用就是区分镜像的版本。
 
-
 ## *参考
-- http://seanlook.com/2014/11/17/dockerfile-introduction/
-- https://medium.com/@pierreprinetti/the-go-1-11-dockerfile-a3218319d191
-- 
+
+- <http://seanlook.com/2014/11/17/dockerfile-introduction/>
+- <https://medium.com/@pierreprinetti/the-go-1-11-dockerfile-a3218319d191>
+- <http://dockone.io/article/5132>
