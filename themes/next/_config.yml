@@ -35,7 +35,7 @@ favicon:
   #ms_browserconfig: /images/browserconfig.xml
 
 # Set default keywords (Use a comma to separate)
-keywords: "Steak, Tech, Golang, Programming, 技术, 后端, 架构"
+keywords: "golang,go,javascript,linux,sql,git,python,php,devops,k8s,docker,kubernetes,blockchain,技术,后端,架构,软件,编程,区块链,博客,开发,互联网,云计算,持续集成,系统集成"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
