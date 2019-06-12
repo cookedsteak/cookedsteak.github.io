@@ -3,10 +3,10 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 牛排
-subtitle: To be a Full-stack creator
-description:
-keywords:
+title:  cooked<牛排>steak
+subtitle: To be a Full-Stack creator
+description: 想啥写啥的技术笔记
+keywords: 技术,软件,开发
 author: Cookedsteak
 language: zh-Hans
 timezone: Asia/Shanghai
