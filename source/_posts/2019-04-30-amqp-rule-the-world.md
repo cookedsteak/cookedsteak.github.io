@@ -92,6 +92,16 @@ RabbitMQ 是比较常用的，实现了AMQP协议的消息队列软件。
 
 在上面四个选项中除去 HTTP，我想将剩余的 3 个做一些和横向比较。
 
+### 与MQTT比较
+
+MQTT: Message Queuing Telemetry Transport，消息队列遥测传输
+
+AMQP: Advanced Message Queuing Protocol，高级消息队列协议
+
+所以一般在工业场景下，如果是作为数据采集端，会使用 MQTT 多一点。有时候保证只传输一次对于工业数据处理是个
+十分必要的条件。
+
+
 ## 消息驱动
 
 ### 基于消息的分布式架构
