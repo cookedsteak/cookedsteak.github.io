@@ -21,13 +21,39 @@ TIB 之后也被电信和通讯公司采用。
 
 <!--more-->
 
-## AMQP
+## 架构
 
 Advance Message Queue Protocol 这是 AMQP 的全称。
-看下概念图
+翻译成：高级消息队列协议。
+
+首先，AMQP 实现了技术解耦，客户端和服务端可以实现消息的无缝通讯。
+
+AMQP 协议约定了三个重要规范：
+
+1. 网络协议
+2. 数据消息封装
+3. 代理服务的定义
+
+![pic2](../assets/img/amqp/capabilities.png)
+
+基本传输协议还是基于 TCP/IP，
+
+我们这里要明白 AMQP 中的主要实体：
+
+- 应用
+- 代理
+- 交换机
+- 队列
+
+应用可以理解为我们消息的两端，代理包含了交换机和队列，是中间件主体，应用定义了 AMQP 的实体代理和路由。消息通过交换机被路由到对应的队列中。
+
+## 重要元素
+
+我们可以看到 AMQP 重要组成元素：
 
 ![pic-1](../assets/img/amqp/amqp-1.png)
 
+简单介绍下，流程就是 
 Producer -> Broker -> Consumer
 
 - Broker
@@ -58,16 +84,38 @@ Producer -> Broker -> Consumer
 #### Direct
 
 最直接的方式，routing key 对上了，咱就往 queue 去呗。
+工作原理：
+
+- 将一个队列绑定到某个交换机上，同时赋予该绑定一个 routing key。
+- 将一个携带routing key 为 R的消息发送给 Direct Exchange，交换鸡直接路由消息给相同绑定值的队列。
+
+直连模式可以将任务分配给多个 worker，而这个过程中负载均衡发生在 consumer 之间，而不是队列。
 
 #### Fanout
 
 有点像广播，所有发到 Exchange 上的 message 都会被发到所有的 queue 上去。
 
+扇形交换机，所有消息队列不管你是啥 routing key，只要帮上他，你就会收到发送给这个交换机的所有消息，是一个典型的广播路由。
+
+下面给出一些使用场景：
+
+- 大规模多用户在线（MMO）游戏可以使用它来处理排行榜更新等全局事件
+- 体育新闻网站可以用它来近乎实时地将比分更新分发给移动客户端
+- 分发系统使用它来广播各种状态和配置更新
+
 #### Topic
 
 Topic 是一个更加细化的 Direct，不光是 routing key，还会有一个通配规则，比如 my.news\ your.news...，如果 topic 规则是 `#.news` 的话，就会都被发送到 news 的 queue 中。
 
+这里我们比较下，Topic Exchange 和 Direct Exchange 有啥区别。直连交换机的消息只能被路由一次到对应的 routing key的队列中，而话题交换机中的消息按照匹配规则被路由到多个队列中。
+
 *规则依据是 routing key and routing pattern ，我觉得这样就更容易理解了。比如我指定 routing key = "#.news" Exchange 就会根据其类型投递到对应的 queue。
+
+#### Header
+
+头交换机，是直连交换机的另一种形式。
+不同点在于，头交换机的交换规则表现在头属性值。
+
 
 ## RabbitMQ
 
