@@ -149,15 +149,87 @@ AMQP: Advanced Message Queuing Protocol，高级消息队列协议
 所以一般在工业场景下，如果是作为数据采集端，会使用 MQTT 多一点。有时候保证只传输一次对于工业数据处理是个
 十分必要的条件。
 
-
 ## 消息驱动
 
 ### 基于消息的分布式架构
 
 由于消息持有双方服务规定的业务数据，在一定程度上违背了封装的要义。换言之，生产与消费消息的双方都紧耦合于消息。消息的变化会直接影响到各个服务接口的实现类。然而，为了尽可能保证接口的抽象性，我们所要处理的消息都不是强类型的，这就使得我们在编译期间很难发现因为消息内容发生变更产生的错误。
 
+## 类型
+
+#### 类型系统
+
+在序列化和反序列化的过程中，
+AMQP 中所支持的类型有：
+
+```
+null
+bool
+ubyte
+ushort
+uint
+ulong
+byte
+short
+int
+long
+float
+double
+decimal32/64/128
+char
+timestamp
+uuid
+binary
+string
+symbol
+list
+map
+array
+```
+
+这些基本类型，差不多够从来描述大部分编程语言的数据类型。
+但是，一些专业领域会有一些自定义的数据类型，用来描述本领域的专业的东西。如果这个和 AMQP 进行通信的话就需要 AMQP 用自己的描述器去转换为 AMQP 支持的类型了。
+
+我们也可以认为这是 AMQP 的自定义类型系统。
+
+一个描述类型有两种类型信息。
+
+```
+symbolic descriptors
+<domain>:<name>
+numeric descriptors
+(domain-id << 32) | descriptor-id
+```
+
+#### 类型编码
+
+AMQP编码数据流由带有嵌入式构造函数的无类型字节组成，有嵌入式构造函数决定，怎么翻译无类型字节。
+所以，一段 AMQP编码数据流都会以一个构造函数开头。
+
+```
+constructor untyped bytes
+    |           |
+    +--+ +-----------------+-----------------+
+    |  | |                                   |
+... 0xA1 0x1E "Hello Glorious Messaging World" ...
+    |    |  |           |                    |
+    |    |  | utf8 bytes                     |
+    |    |              |                    |
+    |    | # of data octets                  |
+    |    |                                   |
+    |    +-----------------+-----------------+
+| |
+| string value encoded according
+| to the str8-utf8 encoding
+|
+primitive format code
+for the str8-utf8 encoding
+```
+
+
 
 ## 参考
 
 - <https://www.cnblogs.com/frankyou/p/5283539.html>
 - <http://tryrabbitmq.com/>
+- <http://www.amqp.org/sites/amqp.org/files/amqp.pdf>
