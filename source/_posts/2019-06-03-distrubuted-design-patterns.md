@@ -163,3 +163,8 @@ comments:  true
 
 好吧，暂时先这样吧。
 
+## 参考
+---
+- <https://segmentfault.com/a/1190000018563570>
+- <https://www.usenix.org/system/files/conference/hotcloud16/hotcloud16_burns.pdf>
+- <https://zhuanlan.zhihu.com/p/34159639>
