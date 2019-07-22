@@ -63,19 +63,19 @@ comments:  true
 
 举个例子吧：我们有一个主容器是 Web Server，我们需要收集 Web Server 所产生的日志。
 所以我们会有一个专门的 sidecar 容器，负责收集日志并把日志存储到集群的存储系统。
-![0](../assets/img/dp/dp1.png)
+![0](/assets/img/dp/dp1.png)
 
 另外一个例子，就是主容器的内容呈现，是由一个 sidecar 容器去实时同步的。
 
 还有个例子是为一个 Http Web Server 提供 Https 功能。
 
-![1](../assets/img/dp/ssl-termination-proxy-sidecar.svg)
+![1](/assets/img/dp/ssl-termination-proxy-sidecar.svg)
 
 你会发现 Sidecar 是主容器的一种扩展和升级，这种模式的好处在于，因为是容器隔离，所以能够保证从属容器不会在主容器需要资源的时候占用过多的资源，因为分配资源的最小单位就是容器。同时，sidecar 一般在功能上比较专职，又是容器化的，所以可以很方便的进行单独的部署、升级。
 
 ### 大使模式（Ambassador pattern）
 
-![abd](../assets/img/dp/abdor.jpg)
+![abd](/assets/img/dp/abdor.jpg)
 
 大使模式实现方式是在节点中增加一个通讯代理。他解决的问题是：
 为某些年久失修的外部服务，增加一个调用代理，调用者是我们节点上的应用。
@@ -103,7 +103,7 @@ comments:  true
 
 最典型的例子应该就是容器管理平台，所有系统中的容器都会有一套统一的监控接口。
 
-![dp2](../assets/img/dp/dp2.png)
+![dp2](/assets/img/dp/dp2.png)
 
 现在的容器多种多样，不过只要保证每个容器都有统一的不变的对外监控接口，对于单独的监控工具来说就不难实时收集各个容器的数据了。
 
@@ -134,7 +134,7 @@ comments:  true
 
 同时还需要一个专门进行作业管理的容器进行任务的分发。
 
-![dp3](../assets/img/dp/dp3.png)
+![dp3](/assets/img/dp/dp3.png)
 
 我在网上并没有找到过多的关于描述 Work queue pattern 的资料。
 似乎这种设计模式的叫法不太一样。

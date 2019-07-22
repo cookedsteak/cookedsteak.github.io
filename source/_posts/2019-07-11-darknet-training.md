@@ -27,7 +27,6 @@ comments:  true
 所以我们需要选择一个合适的物体识别算法（模型），这里我选择了 [Yolo](https://pjreddie.com/darknet/yolo/)。详细介绍请看官网。
 
 
-
 ### 硬件设备
 
 说服需求方租了一个月的云GPU实例，用的Tesla P4。
@@ -36,7 +35,7 @@ comments:  true
 
 #### 驱动的安装
 
-驱动主要体现在学习机上，对应的CUDA和TF框架都是有对应版本的，这个需要到TF官网，或者Nvidia官网上去找。
+驱动主要体现在学习机上，对应的CUDA、CUDNN和TF框架都是有对应版本的，这个需要到TF官网，或者Nvidia官网上去找。
 
 然后是识别机的 opencv 依赖，由于我用的是 docker，所以没有这个顾虑。
 
