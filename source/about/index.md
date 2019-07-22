@@ -6,7 +6,7 @@ category: 关于我
 
 ## ...
 
-To be a full stack creator~
+To be a full-stack creator~
 
 I am also a [DAOONER](http://www.daoone.org).
 
