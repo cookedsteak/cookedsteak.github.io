@@ -4,6 +4,7 @@ title: 谈谈 istio 和 k8s
 category: 技术
 keywords: 微服务,框架,服务网格,servicemesh,istio,k8s
 comments: false
+notshow: true
 ---
 
 说到 istio，就要说到 Service Mesh 服务网格。
