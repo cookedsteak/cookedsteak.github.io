@@ -67,8 +67,64 @@ CPU会有自己的缓存，缓存为了提高CPU运作执行效率。
 
 好了，现在我们知道要【合理】，那到底是怎么个合理法？我们需要建立在一定的语言基础上，所以我们以golang为例，看一下golang的内存模型是怎么设计的。
 
+强烈建议参读下[官方对与内存模型的说明](https://golang.org/ref/mem#tmp_7)。
+
+### happens-before
+
+我这里通俗翻译下：
+
+单个goroutine程序可以被编译器和处理器重新排序执行（我们之前说过了，大部分程序都是如此），但是要建立在不破坏原goroutine行为的基础上，这个基础是由该语言的语言规范制约的（就是要保证计算结果对）。
+
+在这个基础上，导致的现象就是一个goroutine真正执行的顺序和其他程序所侦测到的顺序可能不一样。比如赋值，`a=1;b=2`，这个其实是没有明确顺序可言的。
+
+为了指定读和写的要求（什么是读和写的要求？），我们定义一个关系：happens-before。
+用来描述内存操作的部分顺序。
+
+在单个goroutine中，happens-before 也可用来描述操作声明关系。
+
+我们这么定义 happen-before（外国佬特喜欢用否定句式去定义）:
+> 事件1在事件2发生（happens-before），那么我们也可以说事件2在事件1后发生（happens-after）。
+> 事件1没有在事件2之前发生、也没有在事件2之后发生，那么我们可以说事件1和事件2是同时发生的（happen concurrently）
+
+比如：
+
+```go
+a := 5
+b := a + 1
+```
+我们就说a happens-before b。
+同时，happens-before 也具有传递性。
+
+但请注意，并不是说 a happens-before b ，a就在b之前执行。
+执行和声明关系是不行相关的。
+
+*在明确一下，在单个goroutine中，happens-before 的顺序是指程序语句声明的顺序。*
+
+我们假定一个共享变量v，把对变量的读记作 R(v)，写记作 W(v)。
+如果满足：
+1. R(v)不在W(v)前发生
+2. 没有另一个 W'(v)，发生在 W(v)之后，R(v)之前
+
+那么，R(v)肯定能够侦测到W(v)。（废话啦）
+
+啥是侦测？
+
+为了确保 R(v) 一定能够侦测到 W(v)，我们要确定 W(v) 是唯一的对R(v)的可侦测写操作。
 
 
+### channel之间的通讯
+
+Golang对channel的happens-before也规定了三种情况：
+1. 对一个channel的发送操作 happens-before 相应来自channel的接收操作完成
+2. 关闭一个channel happens-before channel接收到最后的0返回值
+3. 不带缓冲的channel接收操作 happens-before channel 发送操作完成
+
+这里要明确下，channel的发送，原文是 `send on a channel`，写作 `c <- ?`，所以来自channel的接收是
+` <- c `
+
+### 锁
+
+### Once包
 
 ## 参考
 
