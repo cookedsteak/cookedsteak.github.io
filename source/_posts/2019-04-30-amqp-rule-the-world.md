@@ -80,11 +80,12 @@ AMQP 协议约定了三个重要规范：
 简单介绍下，流程就是 
 Producer -> Broker -> Consumer
 
-- Broker
+- Broker（总称）
   接受与分发消息的主体，就是一个应用，比如 rabbitmq server
 
-- Virtual Host
+- Virtual Host（抽象域）
   划分不同的 namespace 个使用同一个 rabbitmq server 的不同用户。
+  用来做权限控制再好不过。
 
 - Connection
   publisher & consumer 与 consumer 之间的 TCP 连接。断开连接的操作只会在 client 端，broker 正常情况下不会主动断开连接。
@@ -93,13 +94,13 @@ Producer -> Broker -> Consumer
   为了减少每次建立 TCP 连接的开销（TCP协议->TCP 协议源码->字节序->大小端->高低位）。
   其实这也是一种连接资源的复用，一般每个线程会复用同一个 channel。
 
-- Exchange
+- Exchange（接收消息的实体）
   message到达broker的第一站，根据分发规则，匹配查询表中的routing key，分发消息到queue中去。所以 Exchange 是一种分发规则。
 
-- Queue
+- Queue（存放消息的实体）
   最终消息都在这里等待被 consumer 领走。一个 message 可以被拷贝到多个 queue 中。
 
-- Binding
+- Binding（一种关系）
   Exchange 和 queue 之间的虚拟连接，binding 中包含routing key。
   Binding 信息会被 Exchange 存储到自己的表中，用来作为分发依据。
 
@@ -211,7 +212,7 @@ map
 array
 ```
 
-这些基本类型，差不多够从来描述大部分编程语言的数据类型。原文为 primitive types。
+这些基本类型，差不多够从来描述大部分编程语言的数据类型，也称为【原始类型】。原文为 primitive types。
 但是，一些专业领域会有一些自定义的数据类型，
 用来描述本领域的专业的东西。比如在消息应用领域，
 就需要在原始数据类型上进行扩展用来进行消息的传输。
@@ -224,7 +225,7 @@ AMQP 类型 + discriptor = described type (描述类型)
 
 一个描述类型由两种不重复的信息组成。
 
-```
+``` ？？？？？？？？？？？
 symbolic descriptors
 <domain>:<name>
 numeric descriptors
@@ -236,12 +237,76 @@ numeric descriptors
 AMQP编码数据流由带有嵌入式构造函数的无类型字节组成，由嵌入式构造函数决定怎么翻译无类型字节。
 所以，一段 AMQP 编码数据流都会以一个构造函数开头。
 
-AMQP编码数据流把数据类型包装成了一个构造函数编码，数据流开头就先说明：“用这个构造函数去解析数据流”
+AMQP编码数据流把数据类型包装成了一个构造函数编码，数据流开头就先说明：“用这个构造函数去解析数据流”。
+
+我们先不用在意传输数据流由几个大部分组成（header\payload...），但记住-我们的数据流永远是以【构造函数编码】开头的。
+
+这里我们跳跃着看下，我们先看看 AMQP 定义的码表：
+
+![encodelist](/assets/img/amqp/encode_list.png)
+![encodelist2](/assets/img/amqp/encode_list2.png)
+
+Code 一列就是定义的8位【原始类型】的【构造函数编码】。
 
 ```
-... 0x00 0xA1 0x03 "URL" 0xA1 0x1E "http://example.org/hello-world" ...
+... 0xA1 0x1E "Hello Glorious Messaging World" ...
 ```
-这是一串字节流
+这是一段简单的字符串数据流，0xA1是用来描述原始数据类型的【构造函数编码】。
+`0x1E`是记录分割符，在后面就是我们的内容了。
+
+下面是一个复杂的【构造函数编码】，他是由自描述编码组成。
+```
+    +-----constructor------+
+    |                      |
+... 0x00 0xA1 0x03 "URL" 0xA1 0x1E "http://example.org/hello-world" ...
+           |_________|
+                |
+            descriptor
+```
+这个字节流传输的是一个 URL。
+其中 0xA1 到 “URL” 是我们前面说的 descriptor，
+一个descriptor定义了如何从原始数据转化为特定领域的数据类型。这里URL就是特定领域。
+
+关于descriptor 这里还有一个概念是巴斯克范式。简称BNF。
+其实BNF就是一个递归的定义说明表。举个例子，我们看一下C语言声明语句的BNF描述：
+```
+<声明语句> ::= <类型><标识符>; | <类型><标识符>[<数字>]; 
+声明语句是由类型和标识符组成的，或者类型、标识符和数字组成的。
+<类型> ::= <简单类型> | <指针类型> | <自定义类型> 
+<指针类型> ::= <简单类型> * | <自定义类型> * 
+<简单类型> ::= int|char|double|float|long|short|void 
+<自定义类型> ::= enum<标识符>|struct<标识符>|union<标识符>|<标识符>
+```
+所有`<xxx>`表示这玩意还能被定义，一直到最后没有`<xxx>`为止才算完成。
+就有点像逛维基百科，每个专有名词都会有另一个百科去解释，不断递归...
+
+我们看下 constructor 的BNF：
+
+![cbnf](/assets/img/amqp/cbnf.png)
+
+这些范式最终终止在了AMQP 定义的码表所表示的16进制。
+
+上图就是说，我们的构造函数编码，哪些字节在前，表示什么意思，都是有规则可寻的，
+而解析规则就是上面的bnf表。
+
+所以一旦你拿到了一段amqp数据流，不要慌，只要按照bnf一点一点对号入座，就能知道是什么类型得了。
+
+#### 复合类型
+
+为什么会有复合类型，因为我们要定义更复杂的数据形式，比如字典。
+AMQP里的复合类型全部通过 xml 去定义的。比如：
+```xml
+<type class="composite" name="book" label="example composite type">
+        <doc>
+          <p>An example composite type.</p>
+        </doc>
+        <descriptor name="example:book:list" code="0x00000003:0x00000002"/>
+        <field name="title" type="string" mandatory="true" label="title of the book"/>
+        <field name="authors" type="string" multiple="true"/>
+        <field name="isbn" type="string" label="the ISBN code for the book"/>
+</type>
+```
+
 
 
 ## 参考
@@ -249,3 +314,4 @@ AMQP编码数据流把数据类型包装成了一个构造函数编码，数据�
 - <https://www.cnblogs.com/frankyou/p/5283539.html>
 - <http://tryrabbitmq.com/>
 - <http://www.amqp.org/sites/amqp.org/files/amqp.pdf>
+- <https://blog.csdn.net/u014287775/article/details/56014778>
