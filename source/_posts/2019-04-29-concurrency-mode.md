@@ -4,7 +4,10 @@ title: 并发模式解决方案（持）
 category: 技术
 keywords: 设计模式,框架,系统
 comments: false
+notshow: true
 ---
+
+参照《7天7并发模式》
 
 并发模式是有分类的，分为 内存共享和消息传递。
 
@@ -13,7 +16,7 @@ comments: false
 - 线程与锁
 - 函数式编程
 - Clojure
-- actor
+- Actor
 - CSP
 - 数据级并行
 - Lambda
@@ -72,22 +75,6 @@ Go 中的 channel 使用锁保证连续访问的现成安全性，使用 channel
 BenchmarkSimpleSet-8 3000000 391 ns/op
 BenchmarkSimpleChannelSet-8 1000000 1699 ns/op
 ```
-
-我参读了下 [《Understanding Real-World Concurrency Bugs in Go》](https://songlh.github.io/paper/go-study.pdf)
-并做了下自己的总结。
-
----
-这是一篇新鲜的论文，作者研究了 6 个比较有名的 go 开源项目包含了
-Docker、k8s、gRPC。 分析了其中 171 个并发bug。
-超过半数的 bug 都是非典型的、go 特有的问题。
-这篇论文的提出，主要是希望给接下去设计基于 golang 的开源项目的人一个可借鉴的依据。
-
-golang 一个主要的目的是降低并发编程的难度，所以go 在设计多线程模型时有两个原则：
-
-- 轻量简单的线程创建
-- 利用 channel 在不同线程中通讯
-
-所有的并发 bug 都会被分类为两个维度：bug原因和他们的行为。
 
 ## 参考
 
