@@ -153,11 +153,12 @@ Golang对channel的happens-before也规定了三种情况：
 这里要明确下，channel的发送，原文是 `send on a channel`，写作 `c <- ?`，所以来自channel的接收是
 ` <- c `
 
+
 其实真正使用channel的时候并没有这么复杂，我们需要关注的还是
 - 有缓冲channel
 - 无缓冲channel
 
-
+在向无缓冲channel发送一个值的时候，该go routine 会进入blocking状态，直到有其他的routine把这个值取出来。
 
 
 ## 参考

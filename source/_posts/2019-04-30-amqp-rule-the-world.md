@@ -297,8 +297,8 @@ Code 一列就是定义的8位【原始类型】的【构造函数编码】。
 AMQP的数据流由两部分组成，【数据构造器】+【无类型字节】。
 而【数据构造器】会根据传输数据的不同分为【原始数据类型】、【自定义数据类型】。
 第一个很简单，就是原始数据类型的编码。第二个需要按照BNF去构造。
----
 
+---
 
 根据我们看到的 BNF，一个【数据构造器】会有4中不同的编码类型，分别是：
 1. 定长
@@ -345,12 +345,10 @@ mandatory 表示一个属性是不是可以为null。
 
 multiple 用来表示该元素是不是数组。
 
-
 我们现在有了复杂类型，那复合类型在数据流中又是怎么被编码的呢？
 复合类型一般被编码成一个 描述列表（described list）。描述列表大概长这个亚子：
 
 ![clist](/assets/img/amqp/clist.png)
-
 
 ## 传输
 
@@ -578,6 +576,7 @@ AMQP 的连接(Connections)由多个无方向性通道（Channel信道、通道�
 2. use connection
 3. close connection
 
+```
 //    Connection          = open-Connection *use-Connection close-Connection
 //    open-Connection     = C:protocol-header
 //                          S:START C:START-OK
@@ -588,7 +587,7 @@ AMQP 的连接(Connections)由多个无方向性通道（Channel信道、通道�
 //    use-Connection      = *channel
 //    close-Connection    = C:CLOSE S:CLOSE-OK
 //                        / S:CLOSE C:CLOSE-OK
-
+```
 
 在了解了一些主要的连接步骤后，我们来总结下连接的状态：
 ---
@@ -655,7 +654,7 @@ AMQP 的连接(Connections)由多个无方向性通道（Channel信道、通道�
 
 通过创建一个会话对象来发布一个会话。
 
-结束以个会话
+结束一个会话
 ---
 
 

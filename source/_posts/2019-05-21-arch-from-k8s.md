@@ -4,6 +4,7 @@ title: 从 k8s 看架构
 category: 技术
 keywords: golang,k8s,docker,微服务,后端
 comments: false
+notshow: true
 ---
 
 k8s 解决了服务治理，而 docker 解决了资源隔离。
