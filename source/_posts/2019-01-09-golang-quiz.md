@@ -6,7 +6,7 @@ keywords: golang,interface,go,框架,后端
 comments: false
 ---
 
-这里记录些关于 golang 的问题。
+这里记录些关于 golang 的问题，算是一个大杂烩。
 有些很基础，有些很有趣。总之，是作为 gopher 都应该掌握的知识。
 
 ---
