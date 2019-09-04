@@ -4,6 +4,7 @@ title: 从 Hash Table 到 Go Map
 category: 技术
 keywords: 后端,计算机原理,数据结构,golang,基础
 comments: false
+notshow: true
 ---
 
 go map 的底层实现其实是基于 hash table 的。
@@ -21,6 +22,7 @@ map 就是一个 hash table，数据被安排成数组形式的 bucket，每个 
 
 
 ### hash table
+
 也称作散列表，是通过数组的方式去实现键值对的数据结构。
 array[a,b,c,d,e]
 这样一个数组，如果要找 c，一种简单的方法是 o(n) 顺序搜索。
@@ -50,12 +52,11 @@ collisions 有两种大解决方案：
 一般而言，最常用的是 Chaining。
 
 #### Linear Probing 算法
-不同 key mod 出相同索引，就顺推直到索引位置为空。
+如果不同的key，mod出相同索引，那就顺推直到索引位置为空。
 
 - 
 
 #### Quadratic Probing
-
 
 但是取余运算也会有算出来不是唯一的时候。
 
