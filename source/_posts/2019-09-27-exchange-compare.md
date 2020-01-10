@@ -3,7 +3,7 @@ layout: post
 title: Rabbitmq Exchange 比较
 category: 技术
 keywords: MQ,原理,队列,消息驱动,协议
-comments:  true
+comments: true
 ---
 
 ## 场景
@@ -48,14 +48,10 @@ comments:  true
 ### Direct Exchange
 
 首先是 direct exchange，该模式下有两种发送情况：
-(一行为一次测试，这里都测试了五次，然后取时间平均值)
+(一行代表一次测试，这里都测试了五次，然后取时间平均值)
 
 1. 一个独立队列，三个消费者
 
-#### 逻辑
-```
-[]
-```
 #### 测试结果
 
 ![pic1](/assets/img/rmq/compare-1.png)
@@ -96,37 +92,48 @@ comments:  true
 
 由于消费者公用一条信息的拷贝，所以如果要根据消费者做差异化配置的话，可能需要提前将所有的配置放入到消息中。
 
-## 超时
+## 结论
+
+你会发现，其实 direct 和 topic 其实并没有太大的时间差别，topic相较于direct的优势，有一部分是来自于生产者写入数据量的减少。
+
+
+## *超时
 
 在进行实践的过程中，常常会遇见`104 connection reset by peer`。
 避免这个错误的方法就是时刻保证client端和RMQ有心跳连接。
 
 另外在Qos的设置上，不要将 `prefetch_count` 设置为大值，`prefetch_count` 这个设置是干什么的？
 
-prefetch_count 是允许consumer 在接收队列中缓存的消息条数，如果达到了缓存的条数，RMQ 会停止投放，知道ack发出。
-那为什么 prefetch 和 104 错误有关呢？
+prefetch_count 是允许consumer 在接收队列中缓存的消息条数，如果达到了缓存的条数，RMQ 会停止投放，直到ack发出。
+
+> 那为什么 prefetch 和 104 错误有关呢？
+
 104的错误是连接被关闭，然后重置了，重置是服务端的操作。
 如果 consumer 的 buffer 满了，RMQ试图写入consumer其他的数据的时候会被block，然后 RMQ 也会block 这个socket，直到超时，就关闭这个连接了。
 如果我们把 prefetch 设置为一个很小的值，就不会造成接收buffer满出来（？），RMQ就能保证持续订阅发送消息。
+
+可以参考这个链接：
+https://github.com/pika/pika/issues/753#issuecomment-222940269
 
 但是，并不是把 prefetch 设置得越小越好。
 关于合理设置 prefetch 的时间，请参考
 https://www.rabbitmq.com/blog/2012/05/11/some-queuing-theory-throughput-latency-and-bandwidth/
 
+`104 connection reset by peer` 是一个很常见的异常，最好的办法是保证 RMQ 和 client 端的心跳连接或者使用手动的 ack机制。
+
+## *关于心跳
+
+RMQ 的心跳检测机制是这样的：
+一个 tcp 连接会有两个心跳检测进程，一个检测数据发送到client，一个检测数据来自client。
+RMQ到client的检测会监听是否有数据发送到 client，如果没有的话，就会自动发送一个保持心跳的包到client。
+另一个检测 tcp 上是否有数据接收，如果没有，则会判断会超时并断开tcp连接。而这个也是大部分导致 104 错误的原因。
 
 
-## 连接方式
+## 参考
 
-### BlockingConnection
-
-保持阻塞除非函数回调（只有一种回调）
-
-### BasicConnection
+- <https://www.cnblogs.com/zhjh256/p/6207339.html>
+- <https://github.com/pika/pika/issues/753#issuecomment-222940269>
+- <https://www.rabbitmq.com/blog/2012/05/11/some-queuing-theory-throughput-latency-and-bandwidth/>
 
 
-
-### SelectConnection
-
-这种连接提供完全异步的情况，支持多种状态的回调。
-比如：连接回调、取消回调、失败回调、成功回调等。
 

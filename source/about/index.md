@@ -2,6 +2,7 @@
 title: '0x40'
 layout: post
 category: 关于我
+comments: false
 ---
 
 ## ...
