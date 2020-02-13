@@ -1,13 +1,10 @@
 ---
 layout: post
-title: 怪谈面向对象设计模式-上
+title: 谈面向对象设计模式-上
 category: 技术
 keywords: 设计模式,golang,架构,微服务,后端,设计,模式
 comments:  true
 ---
-
-## 前言
-
 
 ## 模式的种类
 
@@ -15,7 +12,7 @@ comments:  true
 
 1. 我怎么创建一个对象？
 2. 对象与对象之间怎么调用？
-3. 对象和算法之间如何协调解决问题？
+3. 对象和算法之间如何协同解决问题？
 
 ## 建造者模式 创建 Builder Pattern创建模式
 

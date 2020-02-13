@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 实现微服务的思路
+title: 简单微服务思路
 category: 技术
 keywords: 策略,golang,架构,微服务,后端,设计,模式
 comments:  true

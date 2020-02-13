@@ -1,6 +1,6 @@
 ---
 layout: post
-title: xx的索引·一
+title: 该死的索引·一
 category: 技术
 keywords: mysql,索引,数据库
 comments: true
