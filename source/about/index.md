@@ -5,17 +5,6 @@ category: 关于我
 comments: false
 ---
 
-## ...
-
-To be a full-stack creator~
-
-- 会画画的码农，坐标魔都，曾经的DAOONER
-- 看番，曾痴迷于二次元，已脱坑
-- 对技术有热爱也有痛恨，痛恨全凭第六感
-- 这里的文章会并行更新，所以断断续续的，人肉 goroutine（滑稽）
-
-微信勾搭：cookedsteak
-
 ## HOBBIES
 
 - Cars
@@ -26,4 +15,8 @@ To be a full-stack creator~
 - Cyberpunk
 - Boxing
 - Bangumi
-- Dream Writer
+- Chunibyo
+- Hardware
+
+
+微信勾搭：cookedsteak
