@@ -1,7 +1,6 @@
 ---
 title: '0x40'
 layout: post
-category: 关于我
 comments: false
 ---
 
@@ -20,3 +19,5 @@ comments: false
 
 
 微信勾搭：cookedsteak
+
+![狗粮](/assets/img/love.jpeg)

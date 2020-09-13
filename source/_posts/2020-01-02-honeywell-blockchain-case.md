@@ -4,7 +4,6 @@ title: 超级账本-霍尼韦尔案例
 category: 技术
 keywords: 区块链,架构,技术,超级账本
 comments: true
-notshow: false
 ---
 
 * Honeywell 原文链接：

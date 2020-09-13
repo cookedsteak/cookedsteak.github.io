@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title:  牛排
-subtitle: Guru Guru
+title:  ‧ㄥ‧
+subtitle: cookedsteak
 description: 想啥写啥的技术笔记
 keywords: 技术,软件,开发
-author: Cookedsteak
-language: zh-Hans
+author: Cookedsteak/Ruili Guo
+language: zh-CN
 timezone: Asia/Shanghai
 
 # URL
@@ -25,7 +25,7 @@ tag_dir: tags
 archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
-i18n_dir: :lang
+#i18n_dir: :lang
 skip_render:
 
 # Writing
@@ -73,7 +73,8 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+#theme: next
+theme: maupassant
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
